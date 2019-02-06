@@ -1,0 +1,87 @@
+#!/bin/bash
+# bash hax
+# rui <rui@uwu.zone>
+
+# Every file in ./modules/ gets sourced. Each file is a "module"
+# That means everything's gonna be in this one top level namespace
+# That means submodules can't easily import shit
+#
+# Every module should prefix all functions
+# with the module name and an underscore.
+# 
+# Every module should define a function named the module name. So the
+# dns module defines a dns function. This is called as the subcommand
+# help, so it should just echo usage info.
+#
+# Every module can optionally define a short help function,
+# ${module}_short_help, which is called to generate the one-line
+# usage hint in the top level usage text. Run this script with no
+# arguments to see what I mean.
+#
+# If you can think of a good non-ridiculous way to namespace the
+# functions, please let me know.
+BASEDIR=$(dirname "$(readlink "$0")")
+
+MODULE_FILES=(${BASEDIR}/modules/*)
+for f in ${MODULE_FILES[@]}; do
+    source $f
+done
+
+MODULES=()
+for file in ${MODULE_FILES[@]}; do
+    MODULE=$(basename $file)
+    # Every module should define a function with a name == the file name
+    # Additionally, every one can have a ${filename}_HELP_TEXT function which
+    # will get displayed in top-level help
+    # It'll get called as help.
+    MODULES+=($MODULE)
+done
+
+# format the subcommands right-justified with 2 spaces indentation for the
+# whole list
+MODULE_MAX_LENGTH=-1
+for module in ${MODULES[@]}; do
+    if [ ${#module} -gt $MODULE_MAX_LENGTH ]; then
+        MODULE_MAX_LENGTH=${#module}
+    fi
+done
+MODULE_FORMAT_LENGTH=$((MODULE_MAX_LENGTH + 2))
+
+usage() {
+    echo "usage: $(basename $0) command subcommand"
+    echo
+    echo "available commands are:"
+    for module in ${MODULES[@]}; do
+        short_help_cmd=${module}_short_help
+        short_help_text=$(${short_help_cmd} 2>/dev/null || echo "help not found")
+        printf "%${MODULE_FORMAT_LENGTH}s - %s\n" $module "$short_help_text"
+    done
+}
+
+cmd=$1
+case $cmd in
+    ''|h|-h|help|--help)
+        usage
+        ;;
+    *)
+        shift
+        if ! [ -z $1 ]; then
+            subcmd=$1
+            shift
+            full_cmd=${cmd}_$subcmd
+            if ! command -v $full_cmd >/dev/null; then
+                echo $cmd $subcmd not found
+                exit 1
+            else
+                ${full_cmd} $*
+            fi
+        else
+            if ! command -v $cmd > /dev/null; then
+                echo $cmd not found
+                exit 1
+            else
+                ${cmd}
+            fi
+        fi
+        ;;
+esac

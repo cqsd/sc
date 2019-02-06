@@ -1,0 +1,54 @@
+#!/bin/bash
+
+dns_short_help() {
+    echo "Shortcuts for DNS stuff"
+}
+
+dns() {
+    echo "$(basename $0) ${FUNCNAME[0]} subcommand"
+    echo
+    echo "available subcommands are:"
+    echo "  list-zones - list route53 hosted zones"
+    echo "  list-stage - list route53 DNS records for stage"
+    echo "  list-prod  - list route53 DNS records for production"
+    echo "  list-zone  - list route53 DNS records for the given zone id"
+}
+
+dns_list-zones() {
+    aws route53 list-hosted-zones $*
+}
+
+# segment.build.
+dns_list-build() {
+    aws route53 list-resource-record-sets \
+        --hosted-zone-id='/hostedzone/Z14S3MNCOH1TH2' \
+        --query "ResourceRecordSets[?Type=='A' || Type=='CNAME']" \
+        $*
+}
+
+# segment.com.
+dns_list-com() {
+    aws route53 list-resource-record-sets \
+        --hosted-zone-id='/hostedzone/Z1JLJR02Q3PHKP' \
+        --query "ResourceRecordSets[?Type=='A' || Type=='CNAME']" \
+        $*
+} 
+
+dns_list-zones() {
+    aws route53 list-hosted-zones $* \
+        | jq '[ .HostedZones[] | { name: .Name, zone: .Id } ]' \
+        | tr -d '"{}[],'
+}
+
+# for any zone
+dns_list-zone() {
+    if [ $# -lt 1 ]; then
+        echo 'usage: list-zone AWS_ZONE_ID (run list-zones for a list)'
+        exit 1
+    fi
+    zone_id=$1; shift
+    aws route53 list-resource-record-sets \
+        --hosted-zone-id="${zone_id}" \
+        # --query "ResourceRecordSets[?Type=='A' || Type=='CNAME']" \
+        $*
+} 

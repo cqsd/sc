@@ -1,0 +1,31 @@
+#!/bin/bash
+
+ec2_short_help() {
+    echo "EC2 shortcuts"
+}
+
+ec2() {
+    echo "$(basename $0) ${FUNCNAME[0]} SUBCMD"
+    echo
+    echo "available subcommands are:"
+    echo "  ls - list running ec2 instances"
+}
+
+ec2_ls() {
+    aws ec2 describe-instances --query='Reservations[*].Instances[*]' --filter='Name=instance-state-name,Values=running' $*
+}
+
+ec2_list-running() {
+    ec2_ls $*
+}
+
+ec2_rds() {
+    echo "$(basename $0) ${FUNCNAME[0]} SUBCMD"
+    echo
+    echo "available subcommands are:"
+    echo "  ls - list running rds instances"
+}
+
+ec2_rds_ls() {
+    aws rds describe-db-instances $*
+}

@@ -1,0 +1,28 @@
+#!/bin/bash
+
+lambda_short_help() {
+    echo "Shortcuts for DNS stuff"
+}
+
+lambda() {
+    echo "$(basename $0) ${FUNCNAME[0]} subcommand"
+    echo
+    echo "available subcommands are:"
+    echo "  list - list lambda functions"
+    echo "  show - show lambda function details"
+}
+
+lambda_list() {
+    aws lambda list-functions \
+        | jq '[ .Functions[] | { name: .FunctionName, arn: .FunctionArn } ]' \
+        | tr -d '{}[],"'
+}
+
+lambda_show() {
+    if [ $# -lt 1 ]; then
+        echo 'usage: show FUNCTION_NAME (run list for a list)'
+        exit 1
+    fi
+    fn_name=$1; shift
+    aws lambda get-function --function-name $fn_name $*
+}
