@@ -12,11 +12,17 @@ ec2() {
 }
 
 ec2_ls() {
-    aws ec2 describe-instances --query='Reservations[*].Instances[*]' --filter='Name=instance-state-name,Values=running' $*
+    aws ec2 describe-instances \
+        --query='Reservations[*].Instances[*]' \
+        $* \
+        | jq '[ .[] | .[] | { iam: .IamInstanceProfile.Arn, subnet: .SubnetId, securityGroups: .SecurityGroups, instance: .InstanceId, privateDns: .PrivateDnsName, public: .PublicDnsName } ]'
+
 }
 
 ec2_list-running() {
-    ec2_ls $*
+    ec2_ls \
+        --filter='Name=instance-state-name,Values=running' \
+        $*
 }
 
 ec2_rds() {

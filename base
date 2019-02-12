@@ -22,19 +22,22 @@
 # functions, please let me know.
 BASEDIR=$(dirname "$(readlink "$0")")
 
-MODULE_FILES=(${BASEDIR}/modules/*)
-for f in ${MODULE_FILES[@]}; do
-    source $f
-done
-
 MODULES=()
-for file in ${MODULE_FILES[@]}; do
+for file in ${BASEDIR}/modules/*; do
     MODULE=$(basename $file)
-    # Every module should define a function with a name == the file name
-    # Additionally, every one can have a ${filename}_HELP_TEXT function which
-    # will get displayed in top-level help
-    # It'll get called as help.
-    MODULES+=($MODULE)
+    case $MODULE in
+        _*)
+            # skip anything that has a _ at the start of its filename
+            continue
+            ;;
+        *)
+            source $file
+            # Every module should define a function with a name == the file name
+            # Additionally, every one can have a ${filename}_HELP_TEXT function which
+            # will get displayed in top-level help
+            # It'll get called as help.
+            MODULES+=($MODULE)
+    esac
 done
 
 # format the subcommands right-justified with 2 spaces indentation for the
@@ -69,14 +72,14 @@ case $cmd in
             subcmd=$1
             shift
             full_cmd=${cmd}_$subcmd
-            if ! command -v $full_cmd >/dev/null; then
+            if ! [ "$(type -t $full_cmd)" = function ]; then
                 echo $cmd $subcmd not found
                 exit 1
             else
                 ${full_cmd} $*
             fi
         else
-            if ! command -v $cmd > /dev/null; then
+            if ! [ "$(type -t $cmd)" = function ]; then
                 echo $cmd not found
                 exit 1
             else

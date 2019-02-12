@@ -1,0 +1,29 @@
+#!/bin/bash
+
+ecr_short_help() {
+    echo "Shortcuts for ECR stuff"
+}
+
+ecr() {
+    echo "$(basename $0) ${FUNCNAME[0]} subcommand"
+    echo
+    echo "available subcommands are:"
+    echo "   list-repos - list ECR repositories"
+    echo "  list-images - list images in a repository"
+}
+
+ecr_list-repos() {
+    aws ecr describe-repositories \
+        | jq '[ .repositories[] | {name: .repositoryName, arn: .repositoryArn, uri: .repositoryUri } ]'
+}
+
+ecr_list-images() {
+    if [ $# -lt 1 ]; then
+        echo 'usage: list-images REPO_NAME (run list-repos for a list)'
+        exit 1
+    fi
+    repo_name=$1; shift
+    echo Getting images for $repo_name... 1>&2
+    aws ecr list-images --repository-name $repo_name \
+        | jq '[ .imageIds[] | { tag: .imageTag, digest: .imageDigest } ]'
+}
