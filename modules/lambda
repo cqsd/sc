@@ -14,8 +14,7 @@ lambda() {
 
 lambda_list() {
     aws lambda list-functions \
-        | jq '[ .Functions[] | { name: .FunctionName, arn: .FunctionArn } ]' \
-        | tr -d '{}[],"'
+        | jq '[ .Functions[] | { name: .FunctionName, arn: .FunctionArn } ]'
 }
 
 lambda_show() {

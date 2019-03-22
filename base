@@ -31,6 +31,7 @@ for file in ${BASEDIR}/modules/*; do
             continue
             ;;
         *)
+            # "load" the module
             source $file
             # Every module should define a function with a name == the file name
             # Additionally, every one can have a ${filename}_HELP_TEXT function which
