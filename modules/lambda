@@ -1,15 +1,18 @@
 #!/bin/bash
 
 lambda_short_help() {
-    echo "Shortcuts for DNS stuff"
+    echo "Shortcuts for Lambda stuff"
 }
 
 lambda() {
     echo "$(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
-    echo "  list - list lambda functions"
-    echo "  show - show lambda function details"
+    echo "  list      - list lambda functions"
+    echo "  show      - show lambda function details"
+    echo "  show-env  - show environment variables for a function"
+    echo "  show-envs - show environment variables for a list of functions"
+    # echo "  show-envs-all - show environment variables for all functions (in the region)"
 }
 
 lambda_list() {
@@ -25,3 +28,28 @@ lambda_show() {
     fn_name=$1; shift
     aws lambda get-function --function-name $fn_name $*
 }
+
+lambda_show-env() {
+    if [ $# -lt 1 ]; then
+        echo 'usage: show-env FUNCTION_NAME'
+        exit 1
+    fi
+    lambda_show $1 | jq '.Configuration | { function: .FunctionName, vars: .Environment.Variables }'
+}
+
+lambda_show-envs() {
+    if [ $# -lt 1 ]; then
+        echo 'usage: show-envs [FUNCTION_NAME...]'
+        exit 1
+    fi
+    for name in $@; do
+        lambda_show-env $name
+    done | jq -s
+}
+
+# doesn't work, haven't tried to debug
+# lambda_show-envs-all() {
+#     for name in $(lambda_list | jq '.[].name'); do
+#         lambda_show-env $name
+#     done | jq -s
+# }
