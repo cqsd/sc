@@ -1,10 +1,10 @@
 #!/bin/bash
 
-lambda_short_help() {
+_lambda_short_help() {
     echo "Shortcuts for Lambda stuff"
 }
 
-lambda() {
+_lambda() {
     echo "$(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
@@ -15,12 +15,12 @@ lambda() {
     # echo "  show-envs-all - show environment variables for all functions (in the region)"
 }
 
-lambda_list() {
+_lambda_list() {
     aws lambda list-functions \
         | jq '[ .Functions[] | { name: .FunctionName, arn: .FunctionArn } ]'
 }
 
-lambda_show() {
+_lambda_show() {
     if [ $# -lt 1 ]; then
         echo 'usage: show FUNCTION_NAME (run list for a list)'
         exit 1
@@ -29,7 +29,7 @@ lambda_show() {
     aws lambda get-function --function-name $fn_name $*
 }
 
-lambda_show-env() {
+_lambda_show-env() {
     if [ $# -lt 1 ]; then
         echo 'usage: show-env FUNCTION_NAME'
         exit 1
@@ -37,7 +37,7 @@ lambda_show-env() {
     lambda_show $1 | jq '.Configuration | { function: .FunctionName, vars: .Environment.Variables }'
 }
 
-lambda_show-envs() {
+_lambda_show-envs() {
     if [ $# -lt 1 ]; then
         echo 'usage: show-envs [FUNCTION_NAME...]'
         exit 1

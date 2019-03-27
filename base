@@ -49,6 +49,7 @@ done
 # whole list
 MODULE_MAX_LENGTH=-1
 for module in ${MODULES[@]}; do
+    # ${#var} => str length of ${var}
     if [ ${#module} -gt $MODULE_MAX_LENGTH ]; then
         MODULE_MAX_LENGTH=${#module}
     fi
@@ -60,13 +61,17 @@ usage() {
     echo
     echo "available commands are:"
     for module in ${MODULES[@]}; do
-        short_help_cmd=${module}_short_help
+        short_help_cmd=_${module}_short_help
         short_help_text=$(${short_help_cmd} 2>/dev/null || echo "help not found")
         printf "%${MODULE_FORMAT_LENGTH}s - %s\n" $module "$short_help_text"
     done
 }
 
 cmd=$1
+# prefixing with _ to prevent overwriting real commands (the side effects
+# won't persist, but it can occasionally screw you up when writing modules)
+# do a search for _\$; should be isolated to the case block below for the
+# moment
 case $cmd in
     ''|h|-h|help|--help)
         usage
@@ -76,19 +81,19 @@ case $cmd in
         if ! [ -z $1 ]; then
             subcmd=$1
             shift
-            full_cmd=${cmd}_$subcmd
+            full_cmd=_${cmd}_$subcmd
             if ! [ "$(type -t $full_cmd)" = function ]; then
-                echo $cmd $subcmd not found
+                __error $cmd $subcmd not found
                 exit 1
             else
                 ${full_cmd} $*
             fi
         else
-            if ! [ "$(type -t $cmd)" = function ]; then
-                echo $cmd not found
+            if ! [ "$(type -t _${cmd})" = function ]; then
+                __error $cmd not found
                 exit 1
             else
-                ${cmd}
+                _${cmd}
             fi
         fi
         ;;

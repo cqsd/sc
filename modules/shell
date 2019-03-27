@@ -1,10 +1,10 @@
 #!/bin/bash
 
-shell_short_help() {
+_shell_short_help() {
     echo "various shell shortcuts"
 }
 
-shell() {
+_shell() {
     echo "$(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
@@ -12,7 +12,7 @@ shell() {
 }
 
 # TODO: trap errors and clean up instead of doing this?
-shell_tee-cmd() {
+_shell_tee-cmd() {
     __error This doesn\'t work at the moment.
     exit 1
     if [ $# -lt 2 ] || ! [ "$1" = "--" ] ; then

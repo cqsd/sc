@@ -1,17 +1,17 @@
 #!/bin/bash
 
-meta_short_help() {
+_meta_short_help() {
     echo "meta things"
 }
 
-meta() {
+_meta() {
     echo "$(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
     echo "  list-profiles - list aws profiles"
 }
 
-meta_list-profiles() {
+_meta_list-profiles() {
     if [ -f ~/.aws/config ]; then
         grep '\[.*\]' ~/.aws/config | sed -e 's/\[profile//g' -e 's/\]//g' | tr -d ' '
     else

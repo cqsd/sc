@@ -1,10 +1,10 @@
 #!/bin/bash
 
-dns_short_help() {
+_dns_short_help() {
     echo "Shortcuts for DNS stuff"
 }
 
-dns() {
+_dns() {
     echo "$(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
@@ -17,12 +17,12 @@ dns() {
     echo "  list-com | jq '.[] | .Name' | tr -d '\"' | grep -v '\.xid\.' | sed 's/\.$//g' > /tmp/segment.com.noxid.json"
 }
 
-dns_list-zones() {
+_dns_list-zones() {
     aws route53 list-hosted-zones $*
 }
 
 # segment.build.
-dns_list-build() {
+_dns_list-build() {
     echo Getting A and CNAME records for segment.build... 1>&2
     aws route53 list-resource-record-sets \
         --hosted-zone-id='/hostedzone/Z14S3MNCOH1TH2' \
@@ -31,7 +31,7 @@ dns_list-build() {
 }
 
 # segment.com.
-dns_list-com() {
+_dns_list-com() {
     echo Getting A and CNAME records for segment.com... 1>&2
     aws route53 list-resource-record-sets \
         --hosted-zone-id='/hostedzone/Z1JLJR02Q3PHKP' \
@@ -39,14 +39,14 @@ dns_list-com() {
         $*
 } 
 
-dns_list-zones() {
+_dns_list-zones() {
     aws route53 list-hosted-zones $* \
         | jq '[ .HostedZones[] | { name: .Name, zone: .Id } ]' \
         | tr -d '"{}[],'
 }
 
 # for any zone
-dns_list-zone() {
+_dns_list-zone() {
     if [ $# -lt 1 ]; then
         echo 'usage: list-zone AWS_ZONE_ID (run list-zones for a list)'
         exit 1

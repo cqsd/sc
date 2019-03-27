@@ -1,16 +1,16 @@
 #!/bin/bash
-segment_short_help() {
+_segment_short_help() {
     echo "segment things"
 }
 
-segment() {
+_segment() {
     echo "$(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
     echo "  auth-gateway - authenticate to the app via gateway-api"
 }
 
-segment_auth-gateway() {
+_segment_auth-gateway() {
     email=$1
     if [ -z $email ]; then
         read -p 'email: ' email >&2
