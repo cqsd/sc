@@ -12,8 +12,13 @@ _sec() {
 }
 
 _sec_trufflehog() {
-    __warn This is currently hardcoded to use ~/.venvs/utils/bin/trufflehog
-    ~/.venvs/utils/bin/trufflehog \
+    if ! [ -f ~/.venvs/utils/bin/trufflehog ]; then
+        __warn "Couldn't find ~/.venvs/utils/bin/trufflehog"
+        __warn "Either set that up, or set SC_TRUFFLEHOG_PATH"
+        exit 1
+    fi
+    TRUFFLEHOG=${SC_TRUFFLEHOG_PATH:-~/.venvs/utils/bin/trufflehog}
+    ${TRUFFLEHOG} \
         --regex \
         --entropy false \
         --rules $(dirname ${BASH_SOURCE[0]})/../config/trufflehog-rules.json \

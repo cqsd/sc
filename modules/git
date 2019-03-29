@@ -1,7 +1,7 @@
 #!/bin/bash
 
 _git_short_help() {
-    echo "Slack conveniences"
+    echo "Git conveniences"
 }
 
 _git() {
@@ -12,11 +12,15 @@ _git() {
 }
 
 _git_remove-from-history() {
+    if [ $# -lt 1 ]; then
+        echo 'usage: remove-from-history path/to/file'
+        exit 1
+    fi
     __warn 'This is a destructive command, so you have to run it yourself:'
     echo
     cat <<EOF
 git filter-branch --force --index-filter \\
-    'git rm --cached --ignore-unmatch YOUR_FILE_HERE' \\
+    'git rm --cached --ignore-unmatch "$1"' \\
     --prune-empty --tag-name-filter cat -- --all
 EOF
 }

@@ -12,7 +12,6 @@ _slack() {
 }
 
 _slack_post-webhook() {
-    __warn This is currently hardcoded to use ~/.venvs/utils/bin/trufflehog
     if [ $# -lt 2 ]; then
         echo "usage: ${FUNCNAME[0]} WEBHOOK TEXT"
         exit 1
