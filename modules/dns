@@ -41,8 +41,7 @@ _dns_list-com() {
 
 _dns_list-zones() {
     aws route53 list-hosted-zones $* \
-        | jq '[ .HostedZones[] | { name: .Name, zone: .Id } ]' \
-        | tr -d '"{}[],'
+        | jq '[ .HostedZones[] | { name: .Name, zone: .Id } ]'
 }
 
 # for any zone
