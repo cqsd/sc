@@ -1,4 +1,5 @@
 #!/bin/bash
+
 _segment_short_help() {
     echo "Segment non-sensitive shortcuts"
 }
