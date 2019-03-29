@@ -5,7 +5,7 @@ _meta_short_help() {
 }
 
 _meta() {
-    echo "$(basename $0) ${FUNCNAME[0]} subcommand"
+    echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
     echo "  list-profiles - list aws profiles"

@@ -5,7 +5,7 @@ _lambda_short_help() {
 }
 
 _lambda() {
-    echo "$(basename $0) ${FUNCNAME[0]} subcommand"
+    echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
     echo "  list      - list lambda functions"

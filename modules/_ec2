@@ -5,7 +5,7 @@ ec2_short_help() {
 }
 
 ec2() {
-    echo "$(basename $0) ${FUNCNAME[0]} SUBCMD"
+    echo "usage: $(basename $0) ${FUNCNAME[0]} SUBCMD"
     echo
     echo "available subcommands are:"
     echo "  ls - list running ec2 instances"
@@ -26,7 +26,7 @@ ec2_list-running() {
 }
 
 ec2_rds() {
-    echo "$(basename $0) ${FUNCNAME[0]} SUBCMD"
+    echo "usage: $(basename $0) ${FUNCNAME[0]} SUBCMD"
     echo
     echo "available subcommands are:"
     echo "  ls - list running rds instances"

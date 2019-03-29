@@ -5,7 +5,7 @@ _shell_short_help() {
 }
 
 _shell() {
-    echo "$(basename $0) ${FUNCNAME[0]} subcommand"
+    echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
     echo "  tee-cmd   - portable tee to a command (when >() isn't available)"

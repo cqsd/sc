@@ -5,7 +5,7 @@ _git_short_help() {
 }
 
 _git() {
-    echo "$(basename $0) ${FUNCNAME[0]} subcommand"
+    echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
     echo "  remove-from-history - Fully remove a file from git history"
