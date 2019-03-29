@@ -60,7 +60,7 @@ MODULE_FORMAT_LENGTH=$((MODULE_MAX_LENGTH + 2))
 usage() {
     echo "usage: $(basename $0) command subcommand"
     echo
-    echo "available commands are:"
+    echo "available subcommands are:"
     for module in ${MODULES[@]}; do
         short_help_cmd=_${module}_short_help
         short_help_text=$(${short_help_cmd} 2>/dev/null || echo "help not found")
