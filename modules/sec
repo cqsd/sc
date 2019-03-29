@@ -17,6 +17,7 @@ _sec_trufflehog() {
         --json \
         --regex \
         --entropy false \
-        --rules ../config/trufflehog-rules.json \
-        $@
+        --rules $(dirname ${BASH_SOURCE[0]})/../config/trufflehog-rules.json \
+        $* \
+        | jq -s
 }
