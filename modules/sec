@@ -1,0 +1,22 @@
+#!/bin/bash
+
+_sec_short_help() {
+    echo "some security tool shortcuts"
+}
+
+_sec() {
+    echo "$(basename $0) ${FUNCNAME[0]} subcommand"
+    echo
+    echo "available subcommands are:"
+    echo "  trufflehog - run trufflehog (you can pass args)"
+}
+
+_sec_trufflehog() {
+    __warn This is currently hardcoded to use ~/.venvs/utils/bin/trufflehog
+    ~/.venvs/utils/bin/trufflehog \
+        --json \
+        --regex \
+        --entropy false \
+        --rules ../config/trufflehog-rules.json \
+        $@
+}
