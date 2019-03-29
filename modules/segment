@@ -1,6 +1,6 @@
 #!/bin/bash
 _segment_short_help() {
-    echo "segment things"
+    echo "Segment non-sensitive shortcuts"
 }
 
 _segment() {

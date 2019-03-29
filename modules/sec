@@ -1,7 +1,7 @@
 #!/bin/bash
 
 _sec_short_help() {
-    echo "some security tool shortcuts"
+    echo "Security tool shortcuts"
 }
 
 _sec() {
@@ -14,10 +14,8 @@ _sec() {
 _sec_trufflehog() {
     __warn This is currently hardcoded to use ~/.venvs/utils/bin/trufflehog
     ~/.venvs/utils/bin/trufflehog \
-        --json \
         --regex \
         --entropy false \
         --rules $(dirname ${BASH_SOURCE[0]})/../config/trufflehog-rules.json \
-        $* \
-        | jq -s
+        $*
 }

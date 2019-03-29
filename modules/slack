@@ -1,0 +1,24 @@
+#!/bin/bash
+
+_slack_short_help() {
+    echo "Slack conveniences"
+}
+
+_slack() {
+    echo "$(basename $0) ${FUNCNAME[0]} subcommand"
+    echo
+    echo "available subcommands are:"
+    echo "  post-webhook - send slack-flavored markdown"
+}
+
+_slack_post-webhook() {
+    __warn This is currently hardcoded to use ~/.venvs/utils/bin/trufflehog
+    if [ $# -lt 2 ]; then
+        echo "usage: ${FUNCNAME[0]} WEBHOOK TEXT"
+        exit 1
+    fi
+	curl -X POST \
+		-H 'Content-type: application/json' \
+		--data "{\"mrkdwn\":true,\"text\":\"${2}\"}" \
+        $1
+}

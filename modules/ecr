@@ -1,7 +1,7 @@
 #!/bin/bash
 
 _ecr_short_help() {
-    echo "Shortcuts for ECR stuff"
+    echo "ECR shortcuts"
 }
 
 _ecr() {

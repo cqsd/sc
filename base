@@ -94,7 +94,8 @@ case $cmd in
                 __error $cmd not found
                 exit 1
             else
-                _${cmd}
+                # hack: replace _subcmd with just subcmd (only once)
+                _${cmd} | sed 's/ _/ /'
             fi
         fi
         ;;
