@@ -1,5 +1,15 @@
 #!/bin/bash
 
+__link_open() {
+    __info opening $1
+    if [ "$(uname)" = "Darwin" ]; then
+        open $1
+    else
+        __warn 'using python; this might cause a flash'
+        python -m webbrowser $1
+    fi
+}
+
 _sec_short_help() {
     echo "Security tool shortcuts"
 }
@@ -50,11 +60,5 @@ _sec_wayback() {
 	__info 'h/t @verysmallegg'
 	prefix='http://web.archive.org/web/*/'
     query=$prefix$1
-    __info opening $query
-    if [ "$(uname)" = "Darwin" ]; then
-        open $query
-    else
-        __warn 'using python; this might cause a flash'
-        python -m webbrowser $query
-    fi
+    __link_open $query
 }
