@@ -9,6 +9,8 @@ _sec() {
     echo
     echo "available subcommands are:"
     echo "  trufflehog - run trufflehog (you can pass args)"
+    echo "  grep-todo  - grep common todo strings in pwd"
+    echo "  wayback    - do a wayback machine search (opens a browser)"
 }
 
 _sec_trufflehog() {
@@ -23,4 +25,36 @@ _sec_trufflehog() {
         --entropy false \
         --rules $(dirname ${BASH_SOURCE[0]})/../config/trufflehog-rules.json \
         $*
+}
+
+_sec_grep-todo() {
+	fifo="/tmp/$(head -c4 /dev/urandom | xxd -p | xargs).fifo"
+	mkfifo $fifo
+	# dumb mkfifo tee hack (tee >(subcmd) syntax may not be available)
+	echo -e "----\n$(wc -l < $fifo | xargs) todos found" &
+	{
+		if git status &>/dev/null; then
+			git grep --color=always -ie '\btodo\b' -e '\bxxx\b' -e '\bfixme\b'
+		else
+			grep --color=always -ire '\btodo\b' -e '\bxxx\b' -e '\bfixme\b' .
+		fi
+	} | tee $fifo
+	rm $fifo
+}
+
+_sec_wayback() {
+    if [ $# -lt 1 ]; then
+        echo 'usage: wayback SITE'
+        exit 1
+    fi
+	__info 'h/t @verysmallegg'
+	prefix='http://web.archive.org/web/*/'
+    query=$prefix$1
+    __info opening $query
+    if [ "$(uname)" = "Darwin" ]; then
+        open $query
+    else
+        __warn 'using python; this might cause a flash'
+        python -m webbrowser $query
+    fi
 }
