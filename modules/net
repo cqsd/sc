@@ -1,0 +1,31 @@
+#!/bin/bash
+_net_short_help() {
+    echo "Network shortcuts"
+}
+
+_net() {
+    echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
+    echo
+    echo "available subcommands are:"
+    echo "  nc-proxy - proxy with netcat"
+}
+
+_net_nc-proxy() {
+    __info This is a work in progress
+    if [ $# -lt 1 ]; then
+        echo 'usage: net nc-proxy LISTENING_PORT REMOTE PORT'
+        exit 1
+    fi
+    listen_port=$1
+    remote_host=$2
+    remote_port=$3
+
+    fifo=/tmp/_nc-proxy-fifo-$(head -c 12 /dev/urandom | xxd -p)
+    _cleanup() { rm $fifo; }
+    trap _cleanup EXIT
+
+    mkfifo $fifo
+    __info Made fifo $fifo
+    __info Listening on $listen_port, proxying to $remote_host:$remote_port
+    nc -vl $listen_port < $fifo | nc $remote_host $remote_port > $fifo
+}
