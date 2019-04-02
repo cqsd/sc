@@ -1,0 +1,20 @@
+#!/bin/bash
+
+_utils_short_help() {
+    echo "Miscellaneous"
+}
+
+_utils() {
+    echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
+    echo
+    echo "available subcommands are:"
+    echo "  view-json - pretty view json (jq -C into a pager) (better than bat!)"
+}
+
+_utils_view-json() {
+    if ! [ $# -eq 1 ]; then
+        echo 'usage: view-json FILE'
+        exit 1
+    fi
+    jq -C . < $1 | less -R
+}
