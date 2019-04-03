@@ -7,13 +7,13 @@ _net() {
     echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
-    echo "  nc-proxy - proxy with netcat"
+    echo "  proxy - proxy with netcat"
 }
 
-_net_nc-proxy() {
-    __info This is a work in progress
-    if [ $# -lt 1 ]; then
-        echo 'usage: net nc-proxy LISTENING_PORT REMOTE PORT'
+_net_proxy() {
+    # TODO -v is not logging connection?
+    if ! [ $# -eq 3 ]; then
+        echo 'usage: net proxy LISTENING_PORT REMOTE PORT'
         exit 1
     fi
     listen_port=$1
