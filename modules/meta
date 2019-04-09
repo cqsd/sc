@@ -9,6 +9,7 @@ _meta() {
     echo
     echo "available subcommands are:"
     echo "  list-profiles - list aws profiles"
+    echo "  show-pass     - show item in local keychain (OS X only)"
 }
 
 _meta_list-profiles() {
@@ -17,4 +18,13 @@ _meta_list-profiles() {
     else
         echo 'No ~/.aws/config' >&2
     fi
+}
+
+_meta_show-pass() {
+    if [ $# -lt 1 ]; then
+        echo 'usage: show-pass name'
+        exit 1
+    fi
+    name=$1; shift
+    security find-generic-password -s "$name" -w $*
 }
