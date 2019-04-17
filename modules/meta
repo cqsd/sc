@@ -8,8 +8,9 @@ _meta() {
     echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
-    echo "  list-profiles - list aws profiles"
-    echo "  show-pass     - show item in local keychain (OS X only)"
+    echo "  list-profiles   - list aws profiles"
+    echo "  show-pass       - show item in local keychain (OS X only)"
+    echo '  xargs-edit (xe) - cut -d: -f1 | sort | uniq | xargs ${EDITOR:-vi}'
 }
 
 _meta_list-profiles() {
@@ -27,4 +28,12 @@ _meta_show-pass() {
     fi
     name=$1; shift
     security find-generic-password -s "$name" -w $*
+}
+
+_meta_xargs-edit() {
+    cut -d: -f1 | sort | uniq | xargs ${EDITOR:-vi}
+}
+
+_meta_xe() {
+    _meta_xargs-edit
 }
