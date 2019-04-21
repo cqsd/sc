@@ -1,7 +1,7 @@
 #!/bin/bash
 
 _dns_short_help() {
-    echo "Route53 shortcuts"
+    echo "whatever"
 }
 
 _dns() {

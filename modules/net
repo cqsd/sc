@@ -9,6 +9,7 @@ _net() {
     echo "available subcommands are:"
     echo "  proxy      - proxy with netcat"
     echo "  cert-chain - get the cert chain for a TLS endpoint"
+    echo "  wayback    - do a wayback machine search (opens a browser)"
 }
 
 _net_proxy() {
@@ -39,4 +40,15 @@ _net_cert-chain() {
     domain=$1
     port=${2:-443}
     openssl s_client -connect $domain:$port </dev/null 2>/dev/null
+}
+
+_net_wayback() {
+    if [ $# -lt 1 ]; then
+        echo 'usage: wayback SITE'
+        exit 1
+    fi
+	__info 'h/t @verysmallegg'
+	prefix='http://web.archive.org/web/*/'
+    query=$prefix$1
+    __link_open $query
 }

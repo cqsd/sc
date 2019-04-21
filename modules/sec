@@ -20,7 +20,6 @@ _sec() {
     echo "available subcommands are:"
     echo "  trufflehog - run trufflehog (you can pass args)"
     echo "  grep-todo  - grep common todo strings in pwd"
-    echo "  wayback    - do a wayback machine search (opens a browser)"
 }
 
 _sec_trufflehog() {
@@ -50,15 +49,4 @@ _sec_grep-todo() {
 		fi
 	} | tee $fifo
 	rm $fifo
-}
-
-_sec_wayback() {
-    if [ $# -lt 1 ]; then
-        echo 'usage: wayback SITE'
-        exit 1
-    fi
-	__info 'h/t @verysmallegg'
-	prefix='http://web.archive.org/web/*/'
-    query=$prefix$1
-    __link_open $query
 }
