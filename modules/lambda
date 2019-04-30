@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 _lambda_short_help() {
     echo "Lambda shortcuts"
 }
@@ -8,11 +10,11 @@ _lambda() {
     echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
-    echo "  list      - list lambda functions"
-    echo "  show      - show lambda function details"
-    echo "  show-env  - show environment variables for a function"
-    echo "  show-envs - show environment variables for a list of functions"
-    # echo "  show-envs-all - show environment variables for all functions (in the region)"
+    echo "  list         - list lambda functions"
+    echo "  show         - show lambda function details"
+    echo "  show-env     - show environment variables for a function"
+    echo "  show-envs    - show environment variables for a list of functions"
+    echo "  show-env-all - show environment variables for all functions (in the region)"
 }
 
 _lambda_list() {
@@ -34,7 +36,7 @@ _lambda_show-env() {
         echo 'usage: show-env FUNCTION_NAME'
         exit 1
     fi
-    lambda_show $1 | jq '.Configuration | { function: .FunctionName, vars: .Environment.Variables }'
+    _lambda_show $1 | jq '.Configuration | { function: .FunctionName, vars: .Environment.Variables }'
 }
 
 _lambda_show-envs() {
@@ -43,13 +45,15 @@ _lambda_show-envs() {
         exit 1
     fi
     for name in $@; do
-        lambda_show-env $name
+        _lambda_show-env $name
     done | jq -s
 }
 
 # doesn't work, haven't tried to debug
-# lambda_show-envs-all() {
-#     for name in $(lambda_list | jq '.[].name'); do
-#         lambda_show-env $name
-#     done | jq -s
-# }
+_lambda_show-env-all() {
+    __info "Getting lambda envs (nothing will show until we're done)"
+    for name in $(_lambda_list | jq '.[].name' | tr -d \"); do
+        __info "Getting env for $name" 1>&2
+        _lambda_show-env $name
+    done | jq -s
+}
