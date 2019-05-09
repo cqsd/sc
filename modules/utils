@@ -18,3 +18,12 @@ _utils_view-json() {
     fi
     jq -C . < $1 | less -R
 }
+
+_utils_calc() {
+    if ! [ $# -eq 1 ]; then
+        echo 'usage: calc "1/2*5"'
+        exit 1
+    fi
+    __warn fyi this is only outputting 6 decimals
+    echo "scale=6; $1" | bc -liq
+}

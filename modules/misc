@@ -1,10 +1,10 @@
 #!/bin/bash
 
-_meta_short_help() {
+_misc_short_help() {
     echo "Meta things (uncategorized)"
 }
 
-_meta() {
+_misc() {
     echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
@@ -13,7 +13,7 @@ _meta() {
     echo '  xargs-edit (xe) - cut -d: -f1 | sort | uniq | xargs ${EDITOR:-vi}'
 }
 
-_meta_list-profiles() {
+_misc_list-profiles() {
     if [ -f ~/.aws/config ]; then
         grep '\[.*\]' ~/.aws/config | sed -e 's/\[profile//g' -e 's/\]//g' | tr -d ' '
     else
@@ -21,7 +21,7 @@ _meta_list-profiles() {
     fi
 }
 
-_meta_show-pass() {
+_misc_show-pass() {
     if [ $# -lt 1 ]; then
         echo 'usage: show-pass name'
         exit 1
@@ -30,10 +30,43 @@ _meta_show-pass() {
     security find-generic-password -s "$name" -w $*
 }
 
-_meta_xargs-edit() {
+_misc_xargs-edit() {
     cut -d: -f1 | sort | uniq | xargs ${EDITOR:-vi}
 }
 
-_meta_xe() {
-    _meta_xargs-edit
+_misc_xe() {
+    _misc_xargs-edit
+}
+
+_misc_package-lock-info-all() {
+    if [ $# -lt 3 ]; then
+        echo "usage: package-lock-info-all PACKAGE_LOCK_FILE SLEEP_TIME OUTFILE"
+        exit 1
+    fi
+    if ! command -v npm &>/dev/null; then
+        echo "no npm found, install or set in path"
+        exit 1
+    fi
+    package_lock_file=$1
+    sleep_time=$2
+    outfile=$3
+    for package in $(jq -r '.dependencies | keys[]' $package_lock_file); do
+        echo $package
+        npm view $package . | tee -a $outfile
+        sleep $sleep_time
+    done
+}
+
+_misc_count-size-of-node-modules() {
+    cd node_modules
+    for d in ./*; do
+        if [[ $d =~ .*@.* ]]; then
+            for d2 in $d/*; do
+                echo $d2:$(cloc $d2 --json | jq .SUM.code)
+            done
+        else
+            echo $d:$(cloc $d --json | jq .SUM.code)
+        fi
+    done
+    cd -
 }
