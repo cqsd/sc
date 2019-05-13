@@ -10,6 +10,7 @@ _net() {
     echo "  proxy      - proxy with netcat"
     echo "  cert-chain - get the cert chain for a TLS endpoint"
     echo "  wayback    - do a wayback machine search (opens a browser)"
+    echo "  serve      - serve a directory"
 }
 
 _net_proxy() {
@@ -51,4 +52,16 @@ _net_wayback() {
 	prefix='http://web.archive.org/web/*/'
     query=$prefix$1
     __link_open $query
+}
+
+_net_serve() {
+    if [ $# -lt 1 ]; then
+        echo 'usage: serve [DIR [PORT]]'
+        exit 1
+    fi
+    dir=${1:-.}
+    port=${2:-8000}
+    __info serving $dir on http://localhost:$port
+
+    python3 -m http.server --directory $dir $port
 }

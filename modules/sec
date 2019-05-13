@@ -18,8 +18,9 @@ _sec() {
     echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
-    echo "  trufflehog - run trufflehog (you can pass args)"
-    echo "  grep-todo  - grep common todo strings in pwd"
+    echo "  trufflehog   - run trufflehog (you can pass args)"
+    echo "  grep-todo    - grep common todo strings in pwd"
+    echo "  test-aws-key - grep common todo strings in pwd"
 }
 
 _sec_trufflehog() {
@@ -49,4 +50,17 @@ _sec_grep-todo() {
 		fi
 	} | tee $fifo
 	rm $fifo
+}
+
+_sec_test-aws-key() {
+    read -p "Key ID (AKIA...): " _key_id
+    read -sp "Secret (will be hidden): " _key_secret
+    echo
+
+    __info calling aws sts-get-caller-identity with $_key_id
+    env -i \
+        PATH=$(dirname $(which aws))
+        AWS_ACCESS_KEY_ID=${_key_id} \
+        AWS_SECRET_ACCESS_KEY=${_key_secret} \
+        aws sts get-caller-identity
 }
