@@ -9,6 +9,7 @@ _utils() {
     echo
     echo "available subcommands are:"
     echo "  view-json - pretty view json (jq -C into a pager) (better than bat!)"
+    echo "  calc      - do simple calculations with bc (calc '1/2*5.1')"
 }
 
 _utils_view-json() {
