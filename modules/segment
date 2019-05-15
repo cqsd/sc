@@ -9,6 +9,7 @@ _segment() {
     echo
     echo "available subcommands are:"
     echo "  auth-gateway - authenticate to the app via gateway-api"
+    echo "  get-settings - get project settings given a write key"
 }
 
 _segment_auth-gateway() {
@@ -41,4 +42,15 @@ PAYLOAD
     else
         echo $token
     fi
+}
+
+_segment_get-settings() {
+    if [ "$#" -ne 1 ]; then
+        echo 'usage: get-settings WRITE_KEY'
+        exit 1
+    fi
+    writekey=$1
+    curl -Ls https://cdn.segment.com/v1/projects/${writekey}/settings \
+        | gunzip \
+        | jq
 }
