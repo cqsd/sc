@@ -8,8 +8,9 @@ _utils() {
     echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
-    echo "  view-json - pretty view json (jq -C into a pager) (better than bat!)"
-    echo "  calc      - do simple calculations with bc (calc '1/2*5.1')"
+    echo "  view-json     - pretty view json (jq -C into a pager) (better than bat!)"
+    echo "  calc          - do simple calculations with bc (calc '1/2*5.1')"
+    echo "  print-unicode - print a unicode character by codepoint"
 }
 
 _utils_view-json() {
@@ -22,9 +23,19 @@ _utils_view-json() {
 
 _utils_calc() {
     if ! [ $# -eq 1 ]; then
-        echo 'usage: calc "1/2*5"'
+        echo 'example usage: calc "1/2*5"'
         exit 1
     fi
     __warn fyi this is only outputting 6 decimals
     echo "scale=6; $1" | bc -liq
+}
+
+_utils_print-unicode() {
+    if ! [ $# -eq 1 ]; then
+        echo 'example usage: print-unicode 200B'
+        exit 1
+    fi
+    _codepoint=$1
+    __info depending on the codepoint, you may not see any output &>2
+    python3 -c 'print("\u'${_codepoint}'", end=None)'
 }
