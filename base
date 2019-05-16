@@ -93,7 +93,9 @@ case $cmd in
                 __error $cmd $subcmd not found
                 exit 1
             else
-                ${full_cmd} $@
+                # ${full_cmd} $@
+                __info '$@' is getting quoted rn, which might cause weirdness
+                ${full_cmd} "$@"
             fi
         else
             if ! [ "$(type -t _${cmd})" = function ]; then

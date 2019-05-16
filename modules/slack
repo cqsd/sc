@@ -16,8 +16,9 @@ _slack_post-webhook() {
         echo "usage: ${FUNCNAME[0]} WEBHOOK TEXT"
         exit 1
     fi
+    _slack_url=$1; shift
 	curl -X POST \
 		-H 'Content-type: application/json' \
-		--data "{\"mrkdwn\":true,\"text\":\"${2}\"}" \
-        $1
+		--data "{\"mrkdwn\":true,\"text\":\"${@}\"}" \
+        $_slack_url
 }
