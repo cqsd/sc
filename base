@@ -24,10 +24,10 @@
 
 set -eo pipefail  # unsure if this is a good idea, but hasn't been annoying yet
 
-__success() { echo -e "\033[32m[+]\033[0m $@"; }  # green [+]
-__info()    { echo -e "\033[34m[+]\033[0m $@"; }  # green [+]
-__warn()    { echo -e "\033[33m[-]\033[0m $@"; }  # green [+]
-__error()   { echo -e "\033[31m[!]\033[0m $@"; }  # red   [!]
+__success() { echo -e "\033[32m[+] $@\033[0m"; }  # [+] green
+__info()    { echo -e "\033[34m[+] $@\033[0m"; }  # [+] blue
+__warn()    { echo -e "\033[33m[-] $@\033[0m"; }  # [-] yellow
+__error()   { echo -e "\033[31m[!] $@\033[0m"; }  # [!] red
 
 BASEDIR=$(dirname "$(readlink "$0")")
 
