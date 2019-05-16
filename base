@@ -94,7 +94,7 @@ case $cmd in
                 exit 1
             else
                 # ${full_cmd} $@
-                __info '$@' is getting quoted rn, which might cause weirdness
+                __warn warning from base: we\'re using '"$@"' rn, which might cause weirdness
                 ${full_cmd} "$@"
             fi
         else

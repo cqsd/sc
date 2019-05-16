@@ -72,9 +72,8 @@ _misc_count-size-of-node-modules() {
 }
 
 _misc_test-loggers() {
-    _message=${1:-test message}
-    __success "test success"
-    __info    "test info"
-    __warn    "test warn"
-    __error   "test error"
+    __success ${1:-"test success ||||||||||||||||"}
+    __info    ${1:-"test info    ||||||||||||||||"}
+    __warn    ${1:-"test warn    ||||||||||||||||"}
+    __error   ${1:-"test error   ||||||||||||||||"}
 }
