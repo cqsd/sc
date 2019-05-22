@@ -64,3 +64,13 @@ _sec_test-aws-key() {
         AWS_SECRET_ACCESS_KEY=${_key_secret} \
         aws sts get-caller-identity
 }
+
+_sec_inject-handlebars() {
+    {
+        __info 'this is copied straight from here:'
+        __info 'https://mahmoudsec.blogspot.com/2019/04/handlebars-template-injection-and-rce.html'
+        __info 'in fact this is only getting pushed because gh is the easiest way to transfer this'
+        __info 'payload for tomorrow...'
+    } >&2
+    cat $(dirname ${BASH_SOURCE[0]})/../data/handlerbars-injection-base
+}
