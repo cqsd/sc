@@ -74,37 +74,45 @@ usage() {
     done
 }
 
-cmd=$1
-# prefixing with _ to prevent overwriting real commands (the side effects
-# won't persist, but it can occasionally screw you up when writing modules)
-# do a search for _\$; should be isolated to the case block below for the
-# moment
-case $cmd in
-    ''|h|-h|help|--help)
-        usage
-        ;;
-    *)
-        shift
-        if ! [ -z $1 ]; then
-            subcmd=$1
+# XXX define a high level handle cmd so you can write subcommands for the subcommads
+# TODO: this actually needs to wrap this whole base script or else the modules list
+# will be wrong for sub-subcommands. We'll need an alternate way to print the usage
+# text though (don't think you can define usage multiple times, and idk if you can
+# even define a function in a function)
+__handle_cmd() {
+    # prefixing with _ to prevent overwriting real commands (the side effects
+    # won't persist, but it can occasionally screw you up when writing modules)
+    # do a search for _\$; should be isolated to the case block for the moment
+    cmd=$1
+    case $cmd in
+        ''|h|-h|help|--help)
+            usage
+            ;;
+        *)
             shift
-            full_cmd=_${cmd}_$subcmd
-            if ! [ "$(type -t $full_cmd)" = function ]; then
-                __error $cmd $subcmd not found
-                exit 1
+            if ! [ -z $1 ]; then
+                subcmd=$1
+                shift
+                full_cmd=_${cmd}_$subcmd
+                if ! [ "$(type -t $full_cmd)" = function ]; then
+                    __error $cmd $subcmd not found
+                    exit 1
+                else
+                    # ${full_cmd} $@
+                    # __info '$@' is getting quoted rn, which might cause weirdness
+                    ${full_cmd} "$@"
+                fi
             else
-                # ${full_cmd} $@
-                # __info '$@' is getting quoted rn, which might cause weirdness
-                ${full_cmd} "$@"
+                if ! [ "$(type -t _${cmd})" = function ]; then
+                    __error $cmd not found
+                    exit 1
+                else
+                    # hack: replace _subcmd with just subcmd (only once)
+                    _${cmd} | sed 's/ _/ /'
+                fi
             fi
-        else
-            if ! [ "$(type -t _${cmd})" = function ]; then
-                __error $cmd not found
-                exit 1
-            else
-                # hack: replace _subcmd with just subcmd (only once)
-                _${cmd} | sed 's/ _/ /'
-            fi
-        fi
-        ;;
-esac
+            ;;
+    esac
+}
+
+__handle_cmd "$@"
