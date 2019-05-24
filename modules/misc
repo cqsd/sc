@@ -11,6 +11,7 @@ _misc() {
     echo "  list-profiles   - list aws profiles"
     echo "  show-pass       - show item in local keychain (OS X only)"
     echo '  xargs-edit (xe) - cut -d: -f1 | sort | uniq | xargs ${EDITOR:-vi}'
+    echo '  test-loggers    - test output of logging functions'
 }
 
 _misc_list-profiles() {
@@ -69,6 +70,11 @@ _misc_count-size-of-node-modules() {
         fi
     done
     cd -
+}
+
+_misc_deprecate-npm-modules() {
+    __error not implemented
+    exit 1
 }
 
 _misc_test-loggers() {

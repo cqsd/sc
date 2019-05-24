@@ -18,9 +18,10 @@ _sec() {
     echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
-    echo "  trufflehog   - run trufflehog (you can pass args)"
-    echo "  grep-todo    - grep common todo strings in pwd"
-    echo "  test-aws-key - grep common todo strings in pwd"
+    echo "  trufflehog      - run trufflehog (you can pass args)"
+    echo "  grep-todo       - grep common todo strings in pwd"
+    echo "  test-aws-key    - grep common todo strings in pwd"
+    echo "  check-fish-read - check if fish has saved any secrets typed into read -s"
 }
 
 _sec_trufflehog() {
@@ -73,4 +74,10 @@ _sec_inject-handlebars() {
         __info 'payload for tomorrow...'
     } >&2
     cat $(dirname ${BASH_SOURCE[0]})/../data/handlerbars-injection-base
+}
+
+_sec_check-fish-read() {
+    __info "This is hardcoded for the default path" >&2
+    __info "You should make it check for alternate configuration" >&2
+    cat ~/.local/share/fish/fish_read_history
 }

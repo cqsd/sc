@@ -9,6 +9,7 @@ _git() {
     echo
     echo "available subcommands are:"
     echo "  remove-from-history - Fully remove a file from git history"
+    echo "  fetch-repo-file     - Download a single file from a Github repository"
 }
 
 _git_remove-from-history() {
@@ -24,4 +25,17 @@ git filter-branch --force --index-filter \\
     'git rm --cached --ignore-unmatch "$1"' \\
     --prune-empty --tag-name-filter cat -- --all
 EOF
+}
+
+_git_fetch-repo-file() {
+    if [ $# -lt 1 ]; then
+        echo 'usage: fetch-repo-file filepath'
+        exit 1
+    fi
+    __info "This command relies on env GITHUB_API_TOKEN"
+    if [ -z "GITHUB_API_TOKEN" ]; then
+        __error "Set GITHUB_API_TOKEN"
+        exit 1
+    fi
+    __error "go search for the curl, it's in a gist somewhere"
 }
