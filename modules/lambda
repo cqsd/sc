@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 _lambda_short_help() {
     echo "Lambda shortcuts"
 }
