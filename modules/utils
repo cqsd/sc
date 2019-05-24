@@ -36,6 +36,6 @@ _utils_print-unicode() {
         exit 1
     fi
     _codepoint=$1
-    __info depending on the codepoint, you may not see any output &>2
+    __info depending on the codepoint, you may not see any output >&2
     python3 -c 'print("\u'${_codepoint}'", end=None)'
 }
