@@ -1,0 +1,31 @@
+#!/bin/bash
+
+_scratch_short_help() {
+    echo "stuff that might not be useful at all"
+}
+
+_scratch() {
+    echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
+    echo
+    echo "available subcommands are:"
+    echo "  qemu - idfk"
+}
+
+_scratch_qemu-kali() {
+    if [ $# -ne 1 ]; then
+        echo 'usage: qemu PATH_TO_ISO'
+        exit 1
+    fi
+    image_path=$1
+    __info "Why? fuck if I know"
+    qemu-system-x86_64 \
+        -m 1024 \
+        -boot d \
+        -accel hvf \
+        -smp 3 \
+        -net nic \
+        -net user \
+        -hda testing-image.img \
+        -cdrom ${image_path}
+}
+
