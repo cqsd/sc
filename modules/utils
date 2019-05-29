@@ -8,9 +8,11 @@ _utils() {
     echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
-    echo "  view-json     - pretty view json (jq -C into a pager) (better than bat!)"
-    echo "  calc          - do simple calculations with bc (calc '1/2*5.1')"
-    echo "  print-unicode - print a unicode character by codepoint"
+    echo "  view-json           - pretty view json (jq -C into a pager) (better than bat!)"
+    echo "  calc                - do simple calculations with bc (calc '1/2*5.1')"
+    echo "  print-unicode       - print a unicode character by codepoint"
+    echo "  start-elasticsearch - kinda wacky"
+    echo "  stop-elasticsearch  - kinda wacky"
 }
 
 _utils_view-json() {
@@ -38,4 +40,14 @@ _utils_print-unicode() {
     _codepoint=$1
     __info depending on the codepoint, you may not see any output >&2
     python3 -c 'print("\u'${_codepoint}'", end=None)'
+}
+
+_utils_start-elasticsearch() {
+    __info 'This is definitely one of the less necessary things in here'
+    docker-compose -f ${BASEDIR}/config/docker-compose-es.yml up
+}
+
+_utils_stop-elasticsearch() {
+    __info 'This is definitely one of the less necessary things in here'
+    docker-compose -f ${BASEDIR}/config/docker-compose-es.yml down
 }
