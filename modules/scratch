@@ -11,7 +11,7 @@ _scratch() {
     echo "  qemu - idfk"
 }
 
-_scratch_qemu-kali() {
+_scratch_qemu() {
     if [ $# -ne 1 ]; then
         echo 'usage: qemu PATH_TO_ISO'
         exit 1
