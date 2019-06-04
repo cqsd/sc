@@ -10,6 +10,7 @@ _git() {
     echo "available subcommands are:"
     echo "  remove-from-history - Fully remove a file from git history"
     echo "  fetch-repo-file     - Download a single file from a Github repository"
+    echo "  count               - git rev-list --count --all"
 }
 
 _git_remove-from-history() {
@@ -38,4 +39,8 @@ _git_fetch-repo-file() {
         exit 1
     fi
     __error "go search for the curl, it's in a gist somewhere"
+}
+
+_git_count() {
+    git rev-list --count --all
 }
