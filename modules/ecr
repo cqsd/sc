@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source $CONFIG_DIR/aws-config
+
 _ecr_short_help() {
     echo "ECR shortcuts"
 }
@@ -10,6 +12,7 @@ _ecr() {
     echo "available subcommands are:"
     echo "  list-repos  - list ECR repositories"
     echo "  list-images - list images in a repository"
+    echo "  login       - logs into ecr with default (red) profile"
 }
 
 _ecr_list-repos() {
@@ -26,4 +29,8 @@ _ecr_list-images() {
     echo Getting images for $repo_name... 1>&2
     aws ecr list-images --repository-name $repo_name \
         | jq '[ .imageIds[] | { tag: .imageTag, digest: .imageDigest } ]'
+}
+
+_ecr_login() {
+    exec $(aws-vault exec ${AWS_VAULT_DEFAULT_PROFILE} -- aws ecr get-login --no-include-email)
 }

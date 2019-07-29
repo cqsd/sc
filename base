@@ -9,7 +9,7 @@
 # Every module should prefix all functions with an underscore, the module name,
 # and an underscore. So a hello command in the example module would be defined
 # as _example_hello()
-# 
+#
 # Every module should define a function named the module name. So the dns
 # module defines a dns function. This is called as the subcommand help, so it
 # should just echo usage info.
@@ -29,7 +29,10 @@ __info()    { echo -e "\033[34m[+] $@\033[0m"; }  # [+] blue
 __warn()    { echo -e "\033[33m[-] $@\033[0m"; }  # [-] yellow
 __error()   { echo -e "\033[31m[!] $@\033[0m"; }  # [!] red
 
+__remove_json_artifacts() { tr -d '[]",'; }
+
 BASEDIR=$(dirname "$(readlink "$0")")
+CONFIG_DIR=$BASEDIR/config
 
 MODULES=()
 for file in ${BASEDIR}/modules/*; do

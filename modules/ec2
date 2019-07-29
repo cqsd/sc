@@ -1,37 +1,52 @@
 #!/bin/bash
 
-ec2_short_help() {
+_ec2_short_help() {
     echo "EC2 shortcuts"
 }
 
-ec2() {
+_ec2() {
     echo "usage: $(basename $0) ${FUNCNAME[0]} SUBCMD"
     echo
     echo "available subcommands are:"
-    echo "  ls - list running ec2 instances"
+    echo "  ls    - list running ec2 instances"
+    echo "  ls-sg - list security groups (name and id)"
+    echo "  ssh   - ssh into running instance"
 }
 
-ec2_ls() {
+_ec2_ls() {
     aws ec2 describe-instances \
         --query='Reservations[*].Instances[*]' \
         $* \
         | jq '[ .[] | .[] | { iam: .IamInstanceProfile.Arn, subnet: .SubnetId, securityGroups: .SecurityGroups, instance: .InstanceId, privateDns: .PrivateDnsName, public: .PublicDnsName } ]'
-
 }
 
-ec2_list-running() {
+_ec2_list-running() {
     ec2_ls \
         --filter='Name=instance-state-name,Values=running' \
         $*
 }
 
-ec2_rds() {
+_ec2_rds() {
     echo "usage: $(basename $0) ${FUNCNAME[0]} SUBCMD"
     echo
     echo "available subcommands are:"
     echo "  ls - list running rds instances"
 }
 
-ec2_rds_ls() {
+_ec2_rds_ls() {
     aws rds describe-db-instances $*
+}
+
+_ec2_ls-sg() {
+    aws ec2 describe-security-groups --query 'SecurityGroups[*].[GroupName,GroupId]'
+}
+
+_ec2_ssh() {
+    if [ $# -lt 1 ]; then
+        echo 'usage: ssh <IP or domain> [user]'
+        exit 1
+    fi
+    host=$1
+    user=${2:-"ec2-user"}
+    ssh -i ~/.ssh/ec2-default.pem $user@$host
 }

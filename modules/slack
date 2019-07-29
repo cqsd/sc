@@ -14,6 +14,8 @@ _slack() {
 _slack_post-webhook() {
     if [ $# -lt 2 ]; then
         echo "usage: ${FUNCNAME[0]} WEBHOOK TEXT"
+        echo
+        echo "Note: Slack responds 'no_text' if posting empty string to valid webhook, 'invalid_token' to invalid webhook"
         exit 1
     fi
     _slack_url=$1; shift

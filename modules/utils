@@ -16,11 +16,15 @@ _utils() {
 }
 
 _utils_view-json() {
-    if ! [ $# -eq 1 ]; then
-        echo 'usage: view-json FILE'
+    if [ $# -eq 1 ] && [ "$1" = "-h" ]; then
+        echo 'usage: view-json FILE or view-json < file'
         exit 1
     fi
-    jq -C . < $1 | less -R
+    if [ $# -eq 1 ]; then
+        jq -C . < $1 | less -R
+    else
+        cat | jq -C . | less -R
+    fi
 }
 
 _utils_calc() {

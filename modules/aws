@@ -1,0 +1,40 @@
+#!/bin/bash
+
+_aws_short_help() {
+    echo "whatever"
+}
+
+_aws() {
+    echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
+    echo
+    echo "available subcommands are:"
+    echo "  list-ssm-params - list ssm parameters"
+    echo "  get-ssm-param   - get a particular ssm parameter (with decryption)"
+}
+
+# for any zone
+_aws_list-ssm-params() {
+    # if [ $# -lt 1 ]; then
+    #     echo 'usage: list-ssm-params'
+    #     exit 1
+    # fi
+    aws ssm describe-parameters \
+        --query "Parameters[?Type=='SecureString']" \
+        $* \
+        | jq '.[].Name' \
+        | __remove_json_artifacts
+}
+
+# for any zone
+_aws_get-ssm-param() {
+    if [ $# -lt 1 ]; then
+        echo 'usage: get-ssm-param NAME'
+        exit 1
+    fi
+    name=$1; shift
+    aws ssm get-parameter \
+        --name "$name" \
+        --with-decryption \
+        | jq .Parameter.Value \
+        | __remove_json_artifacts
+}
