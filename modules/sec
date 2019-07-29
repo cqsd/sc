@@ -25,6 +25,7 @@ _sec() {
     echo "  test-aws-key    - grep common todo strings in pwd"
     echo "  check-fish-read - check if fish has saved any secrets typed into read -s"
     echo "  shark           - run some shit against a target"
+    echo "  nmap            - nmap some shit"
 }
 
 _sec_trufflehog() {
@@ -108,7 +109,7 @@ _sec_shark() {
 
 _sec_nmap() {
     if [ $# -lt 1 ]; then
-        echo 'usage: shark target [n_top_ports_to_nmap(25)]'
+        echo 'usage: nmap target [n_top_ports_to_nmap(25)]'
         exit 1
     fi
     target=$1
