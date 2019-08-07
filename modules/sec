@@ -27,6 +27,7 @@ _sec() {
     echo "  check-fish-read - check if fish has saved any secrets typed into read -s"
     echo "  shark           - run some shit against a target"
     echo "  nmap            - nmap some shit"
+    echo "  payload         - cat a payload (no args to list available)"
 }
 
 _sec_trufflehog() {
@@ -71,14 +72,30 @@ _sec_test-aws-key() {
         aws sts get-caller-identity
 }
 
-_sec_inject-handlebars() {
-    {
-        __info 'this is copied straight from here:'
-        __info 'https://mahmoudsec.blogspot.com/2019/04/handlebars-template-injection-and-rce.html'
-        __info 'in fact this is only getting pushed because gh is the easiest way to transfer this'
-        __info 'payload for tomorrow...'
-    } >&2
-    cat $(dirname ${BASH_SOURCE[0]})/../data/handlerbars-injection-base
+_sec_payload() {
+    _basedir=$(dirname ${BASH_SOURCE[0]})/../data/sec
+    _usage() { echo "usage: payload TYPE NAME"; }
+    _category=$1
+    _subcategory=$2
+    _name=$3
+    if [ -z "$_category" ]; then
+        echo available categories
+        ls $_basedir | sed 's/^/  /g'
+        exit 0
+    elif [ -z "$_subcategory" ]; then
+        echo available $_category types
+        ls $_basedir/$_category | sed 's/^/  /g'
+        exit 0
+    elif [ -z "$_name" ]; then
+        echo available $_category/$_subcategory payloads
+        ls $_basedir/$_category/$_subcategory | sed 's/^/  /g'
+        exit 0
+    elif [ $# -gt 3 ]; then
+        _usage
+    else
+        grep -o "^#.*$" $_basedir/$_category/$_subcategory/$_name >&2
+        grep -v "^#.*$" $_basedir/$_category/$_subcategory/$_name
+    fi
 }
 
 _sec_check-fish-read() {
