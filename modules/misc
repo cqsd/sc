@@ -8,18 +8,9 @@ _misc() {
     echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
-    echo "  list-profiles   - list aws profiles"
     echo "  show-pass       - show item in local keychain (OS X only)"
     echo '  xargs-edit (xe) - cut -d: -f1 | sort | uniq | xargs ${EDITOR:-vi}'
     echo '  test-loggers    - test output of logging functions'
-}
-
-_misc_list-profiles() {
-    if [ -f ~/.aws/config ]; then
-        grep '\[.*\]' ~/.aws/config | sed -e 's/\[profile//g' -e 's/\]//g' | tr -d ' '
-    else
-        echo 'No ~/.aws/config' >&2
-    fi
 }
 
 _misc_show-pass() {
