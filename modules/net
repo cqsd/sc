@@ -11,6 +11,7 @@ _net() {
     echo "  cert-chain - get the cert chain for a TLS endpoint"
     echo "  wayback    - do a wayback machine search (opens a browser)"
     echo "  serve      - serve a directory"
+    echo "  show-ip    - show IP of specified interface"
 }
 
 _net_proxy() {
@@ -64,4 +65,23 @@ _net_serve() {
     __info serving $dir on http://localhost:$port
 
     python3 -m http.server --directory $dir $port
+}
+
+__net_parse_ifconfig() {
+    grep 'inet\b' | awk '{ print $2 }' | cut -d/ -f1
+}
+
+_net_show-ip() {
+    if [ $# -ne 1 ]; then
+        echo 'usage: show-ip IFNAME'
+        exit 1
+    fi
+
+    if hash ifconfig 2>/dev/null; then
+        ifconfig $1 | __net_parse_ifconfig
+    elif hash ip 2>/dev/null; then
+        ip addr show $1 | __net_parse_ifconfig
+    else
+        echo no ifconfig or ip, todo
+    fi
 }
