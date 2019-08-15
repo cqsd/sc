@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+# obviously don't use this unless you can read it and know what's wrong with it
+import os
+import socket
+import ssl
+import subprocess
+import tempfile
+
+
+def edit_contents(fname=None):
+    # if fname given, edit the file
+    # otherwise, make a tempfile and edit that instead
+    # spawn an editor to edit the file
+    # when done, return the contents of the file?
+    try:
+        editor = os.environ['EDITOR']
+    except KeyError:
+        raise Exception('Please set the EDITOR environment variable')
+
+    if not fname:
+        f = tempfile.NamedTemporaryFile(suffix='.tmp')
+        fname = f.name
+        f.close()
+
+    subprocess.call([editor, fname])
+
+    try:
+        with open(fname, 'rb') as f:
+            return f.read()
+    except FileNotFoundError:
+        print('File not found or empty file')
+        return ''
+
+
+def replace_lf_with_crlf(bstring):
+    return bstring.replace(b'\n', b'\r\n')
+
+
+def read_socket(sock, bufsize=1024):
+    data = b''
+    while 1:
+        chunk = sock.recv(bufsize)
+        if not chunk:
+            break
+        data += chunk
+
+    return data
+
+
+def send_request(host, port, data, use_ssl=True, verify_ssl=False):
+    '''yes, yes, I know'''
+    with socket.create_connection((host, port)) as sock:
+        if use_ssl:
+            ctx = ssl.create_default_context()
+            with ctx.wrap_socket(sock, server_hostname=host) as ssock:
+                ssock.send(data)
+                return ssock.read()
+        else:
+            sock.send(data)
+            return read_socket(sock)
+
+
+if __name__ == '__main__':
+    import argparse
+    import sys
+
+    parser = argparse.ArgumentParser('tcputil', description='shitty netcat with editor')
+    parser.add_argument('host', type=str)
+    parser.add_argument('port', type=int)
+    parser.add_argument('-f', '--request-file', type=str, default='')
+    parser.add_argument('-k', '--no-verify-ssl', action='store_true')
+    parser.add_argument('--ssl', help='use ssl', action='store_true')
+
+    args = parser.parse_args()
+
+    data = edit_contents(args.request_file)
+
+    resp = send_request(
+        args.host,
+        args.port,
+        replace_lf_with_crlf(data),
+        use_ssl=args.ssl,
+        verify_ssl=not args.no_verify_ssl
+    )
+
+    sys.stdout.buffer.write(resp)

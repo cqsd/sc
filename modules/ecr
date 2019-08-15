@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $CONFIG_DIR/aws-config
+source $__CONFIG_DIR/aws-config
 
 _ecr_short_help() {
     echo "ECR shortcuts"

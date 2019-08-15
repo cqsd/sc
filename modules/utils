@@ -48,10 +48,10 @@ _utils_print-unicode() {
 
 _utils_start-elasticsearch() {
     __info 'This is definitely one of the less necessary things in here'
-    docker-compose -f ${BASEDIR}/config/docker-compose-es.yml up
+    docker-compose -f ${__BASEDIR}/config/docker-compose-es.yml up
 }
 
 _utils_stop-elasticsearch() {
     __info 'This is definitely one of the less necessary things in here'
-    docker-compose -f ${BASEDIR}/config/docker-compose-es.yml down
+    docker-compose -f ${__BASEDIR}/config/docker-compose-es.yml down
 }

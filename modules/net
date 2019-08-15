@@ -12,6 +12,7 @@ _net() {
     echo "  wayback    - do a wayback machine search (opens a browser)"
     echo "  serve      - serve a directory"
     echo "  show-ip    - show IP of specified interface"
+    echo "  tcp        - send raw TCP"
 }
 
 _net_proxy() {
@@ -84,4 +85,8 @@ _net_show-ip() {
     else
         echo no ifconfig or ip, todo
     fi
+}
+
+_net_tcp() {
+    ${__BASEDIR}/bin/tcputil $*
 }

@@ -31,11 +31,12 @@ __error()   { echo -e "\033[31m[!] $@\033[0m"; }  # [!] red
 
 __remove_json_artifacts() { tr -d '[]",'; }
 
-BASEDIR=$(dirname "$(readlink "$0")")
-CONFIG_DIR=$BASEDIR/config
+__BASEDIR=$(dirname "$(readlink "$0")")
+__CONFIG_DIR=$__BASEDIR/config
+__BIN_DIR=$__BASEDIR/bin
 
 MODULES=()
-for file in ${BASEDIR}/modules/*; do
+for file in ${__BASEDIR}/modules/*; do
     MODULE=$(basename $file)
     case $MODULE in
         _*)
