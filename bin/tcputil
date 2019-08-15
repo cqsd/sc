@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# obviously don't use this unless you can read it and know what's wrong with it
+# don't use this unless you can figure out what's wrong with it
 import os
 import socket
 import ssl
@@ -64,21 +64,40 @@ if __name__ == '__main__':
     import argparse
     import sys
 
-    parser = argparse.ArgumentParser('tcputil', description='shitty netcat with editor')
+    print('TODO: save a history of all the requests that have been sent')
+    print('Use the hostname and port to index?')
+
+    parser = argparse.ArgumentParser('tcputil', description='shit nc with editor')
+
     parser.add_argument('host', type=str)
     parser.add_argument('port', type=int)
-    parser.add_argument('-f', '--request-file', type=str, default='')
+    parser.add_argument('file', type=str, default='', nargs='?')
     parser.add_argument('-k', '--no-verify-ssl', action='store_true')
+    parser.add_argument('-c', '--convert-to-crlf', action='store_true')
+    parser.add_argument('-m', '--interpret-escapes', action='store_true')
     parser.add_argument('--ssl', help='use ssl', action='store_true')
+    parser.add_argument('--no-archive', help='don\'t save the request in history', action='store_true')
 
     args = parser.parse_args()
 
-    data = edit_contents(args.request_file)
+    if args.file == '-':
+        data = sys.stdin.buffer.read()
+    else:
+        data = edit_contents(args.file)
+
+    if not data:
+        print('No data to send, aborting')
+        sys.exit(1)
+
+    if args.convert_to_crlf:
+        data = replace_lf_with_crlf(data)
+    if args.interpret_escapes:
+        data = data.decode('unicode_escape')
 
     resp = send_request(
         args.host,
         args.port,
-        replace_lf_with_crlf(data),
+        data,
         use_ssl=args.ssl,
         verify_ssl=not args.no_verify_ssl
     )
