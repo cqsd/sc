@@ -4,7 +4,19 @@ import os
 import socket
 import ssl
 import subprocess
+import sys
 import tempfile
+
+
+def parse_http(data):
+    # make a read_until to read until crlf
+    # parse out the method line
+    # keep doing read_until and collecting header kvs until you get a blank one
+    # split on ':' to get the headers (sort of)
+    # return as a dict of
+    # {'method': method, 'version': version, 'headers': header_dict}
+    # (potentially use a namedtuple instead)
+    pass
 
 
 def edit_contents(fname=None):
@@ -36,25 +48,29 @@ def replace_lf_with_crlf(bstring):
     return bstring.replace(b'\n', b'\r\n')
 
 
-def read_socket(sock, bufsize=1024):
+def read_socket(sock, bufsize=1):
     data = b''
     while 1:
         chunk = sock.recv(bufsize)
         if not chunk:
             break
         data += chunk
+        # add a -q/--quiet flag
+        sys.stdout.buffer.write(chunk)
+        sys.stdout.buffer.flush()
 
     return data
 
 
-def send_request(host, port, data, use_ssl=True, verify_ssl=False):
+def send_request(host, port, data, use_ssl=True, verify_ssl=False, timeout=10):
     '''yes, yes, I know'''
     with socket.create_connection((host, port)) as sock:
+        sock.settimeout(timeout)
         if use_ssl:
             ctx = ssl.create_default_context()
             with ctx.wrap_socket(sock, server_hostname=host) as ssock:
                 ssock.send(data)
-                return ssock.read()
+                return read_socket(ssock)
         else:
             sock.send(data)
             return read_socket(sock)
@@ -62,7 +78,6 @@ def send_request(host, port, data, use_ssl=True, verify_ssl=False):
 
 if __name__ == '__main__':
     import argparse
-    import sys
 
     print('TODO: save a history of all the requests that have been sent')
     print('Use the hostname and port to index?')
@@ -73,10 +88,12 @@ if __name__ == '__main__':
     parser.add_argument('port', type=int)
     parser.add_argument('file', type=str, default='', nargs='?')
     parser.add_argument('-k', '--no-verify-ssl', action='store_true')
-    parser.add_argument('-c', '--convert-to-crlf', action='store_true')
+    parser.add_argument('-c', '--crlf', help='convert lf to crlf', action='store_true')
     parser.add_argument('-m', '--interpret-escapes', action='store_true')
     parser.add_argument('--ssl', help='use ssl', action='store_true')
-    parser.add_argument('--no-archive', help='don\'t save the request in history', action='store_true')
+    parser.add_argument('--no-archive', help='TODO don\'t save the request in history', action='store_true')
+    parser.add_argument('--http', help='TODO interpret as http (parse headers)', action='store_true')
+    parser.add_argument('--timeout', type=float, default=5)
 
     args = parser.parse_args()
 
@@ -89,17 +106,22 @@ if __name__ == '__main__':
         print('No data to send, aborting')
         sys.exit(1)
 
-    if args.convert_to_crlf:
+    if args.crlf:
         data = replace_lf_with_crlf(data)
     if args.interpret_escapes:
+        import codecs
         data = data.decode('unicode_escape')
+        data = codecs.encode(data, 'utf-8')
+
+    print(f'data length (after all encoding): [{len(data)}]')
 
     resp = send_request(
         args.host,
         args.port,
         data,
         use_ssl=args.ssl,
-        verify_ssl=not args.no_verify_ssl
+        verify_ssl=not args.no_verify_ssl,
+        timeout=args.timeout
     )
 
     sys.stdout.buffer.write(resp)
