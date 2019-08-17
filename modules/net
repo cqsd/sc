@@ -1,4 +1,7 @@
 #!/bin/bash
+
+source $__CONFIG_DIR/net
+
 _net_short_help() {
     echo "Network shortcuts"
 }
@@ -7,12 +10,13 @@ _net() {
     echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
-    echo "  proxy      - proxy with netcat"
-    echo "  cert-chain - get the cert chain for a TLS endpoint"
-    echo "  wayback    - do a wayback machine search (opens a browser)"
-    echo "  serve      - serve a directory"
-    echo "  show-ip    - show IP of specified interface"
-    echo "  tcp        - send raw TCP"
+    echo "  proxy        - proxy with netcat"
+    echo "  cert-chain   - get the cert chain for a TLS endpoint"
+    echo "  wayback      - do a wayback machine search (opens a browser)"
+    echo "  serve        - serve a directory"
+    echo "  show-ip      - show IP of specified interface"
+    echo "  tcp          - send raw TCP"
+    echo "  chrome-proxy - start chrome with proxy"
 }
 
 _net_proxy() {
@@ -89,4 +93,23 @@ _net_show-ip() {
 
 _net_tcp() {
     ${__BASEDIR}/bin/tcputil $*
+}
+
+
+_net_chrome-proxy() {
+    if [ $* -ne 1 ]; then
+        echo usage: chrome-proxy PROXY_ADDR
+        echo example: chrome-proxy localhost:8080
+        exit 1
+    elif [ -z "${CHROME_EXECUTABLE_PATH}" ]; then
+        echo please set CHROME_EXECUTABLE_PATH in env or $__BASEDIR/config/net
+        exit 1
+    fi
+    proxy_host=$1
+    "${CHROME_EXECUTABLE_PATH}" \
+        --args \
+        --proxy-server="${proxy_host}" \
+        --disable-web-security \
+        --user-data-dir \
+        --ignore-certificate-errors
 }
