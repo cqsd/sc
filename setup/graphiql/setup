@@ -1,0 +1,2 @@
+#!/bin/bash
+docker build graphiql -f graphiql/Dockerfile -t htb:graphiql

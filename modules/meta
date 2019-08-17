@@ -1,0 +1,45 @@
+#!/bin/bash
+
+__SETUP_DIR=$__BASEDIR/setup
+
+_meta_short_help() {
+    echo "setup stuff I guess"
+}
+
+_meta() {
+    echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
+    echo
+    echo "available subcommands are:"
+    echo "  setup - install/build deps"
+}
+
+_meta_setup() {
+    __setup_usage() {
+        echo usage: setup ITEM
+        echo
+        echo available items
+        echo "  all - setup everything below"
+        ls $__setup_usage | sed "s/^/  /g"
+        exit 1
+    }
+    if [ $# -lt 1 ]; then
+        __setup_usage
+    fi
+    name=$1; shift
+    case $name in
+        all)
+            for d in $__SETUP_DIR; do
+                __info setting up $d
+                $d/setup
+            done
+            ;;
+        *)
+            if ! [ -f $__SETUP_DIR/$name/setup ]; then
+                __error $name is not recognized as a setup item
+                __setup_usage
+            fi
+            __info setting up $name
+            $__SETUP_DIR/$name/setup
+            ;;
+    esac
+}
