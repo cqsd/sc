@@ -1,10 +1,11 @@
 #!/bin/bash
 
 _utils_short_help() {
-    echo "Miscellaneous"
+    echo idk
 }
 
 _utils() {
+    __info todo: change the elasticsearch thing to be like graphiql
     echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
@@ -13,6 +14,7 @@ _utils() {
     echo "  print-unicode       - print a unicode character by codepoint"
     echo "  start-elasticsearch - kinda wacky"
     echo "  stop-elasticsearch  - kinda wacky"
+    echo "  graphiql            - run browsable graphiql"
 }
 
 _utils_view-json() {
@@ -54,4 +56,32 @@ _utils_start-elasticsearch() {
 _utils_stop-elasticsearch() {
     __info 'This is definitely one of the less necessary things in here'
     docker-compose -f ${__BASEDIR}/config/docker-compose-es.yml down
+}
+
+_utils_graphiql() {
+    __graphiql_usage() {
+        echo 'usage: graphiql [start|stop] [options..]'
+        exit 1
+    }
+
+    if [ $# -lt 1 ]; then
+        __graphiql_usage
+    fi
+
+    cmd=$1; shift
+    container_name=graphiql
+    case $cmd in
+        start|run)
+            port=${1:-3000}
+            echo starting graphiql workspace, container name \"${container_name}\"
+            docker run --name ${container_name} --rm -dp ${port}:3000 htb:graphiql
+            echo running on port ${port}
+            ;;
+        stop|kill)
+            docker kill ${container_name}
+            ;;
+        *)
+            __graphiql_usage
+            ;;
+    esac
 }

@@ -1,17 +1,16 @@
 #!/bin/bash
 
 _misc_short_help() {
-    echo "Meta things (uncategorized)"
+    echo Uncategorized
 }
 
 _misc() {
-    echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
+    echo usage: $(basename $0) ${FUNCNAME[0]} subcommand
     echo
-    echo "available subcommands are:"
+    echo available subcommands are:
     echo "  show-pass       - show item in local keychain (OS X only)"
     echo '  xargs-edit (xe) - cut -d: -f1 | sort | uniq | xargs ${EDITOR:-vi}'
     echo "  test-loggers    - test output of logging functions"
-    echo "  graphiql        - run browsable graphiql"
 }
 
 _misc_show-pass() {
@@ -74,32 +73,4 @@ _misc_test-loggers() {
     __info    ${1:-"test info    ||||||||||||||||"}
     __warn    ${1:-"test warn    ||||||||||||||||"}
     __error   ${1:-"test error   ||||||||||||||||"}
-}
-
-_misc_graphiql() {
-    __graphiql_usage() {
-        echo 'usage: graphiql [start|stop] [options..]'
-        exit 1
-    }
-
-    if [ $# -lt 1 ]; then
-        __graphiql_usage
-    fi
-
-    cmd=$1; shift
-    container_name=graphiql
-    case $cmd in
-        start|run)
-            port=${1:-3000}
-            echo starting graphiql workspace, container name \"${container_name}\"
-            docker run --name ${container_name} --rm -dp ${port}:3000 htb:graphiql
-            echo running on port ${port}
-            ;;
-        stop|kill)
-            docker kill ${container_name}
-            ;;
-        *)
-            __graphiql_usage
-            ;;
-    esac
 }
