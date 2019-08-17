@@ -12,7 +12,7 @@ _net() {
     echo "available subcommands are:"
     echo "  proxy        - proxy with netcat"
     echo "  cert-chain   - get the cert chain for a TLS endpoint"
-    echo "  wayback      - do a wayback machine search (opens a browser)"
+    echo "  wayback      - wayback machine search (opens a browser) (hermit!!)"
     echo "  serve        - serve a directory"
     echo "  show-ip      - show IP of specified interface"
     echo "  tcp          - send raw TCP"
@@ -54,8 +54,7 @@ _net_wayback() {
         echo 'usage: wayback SITE'
         exit 1
     fi
-	__info 'h/t @verysmallegg'
-	prefix='http://web.archive.org/web/*/'
+    prefix='http://web.archive.org/web/*/'
     query=$prefix$1
     __link_open $query
 }
