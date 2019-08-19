@@ -35,6 +35,8 @@ __BASEDIR=$(dirname "$(readlink "$0")")
 __CONFIG_DIR=$__BASEDIR/config
 __BIN_DIR=$__BASEDIR/bin
 
+__EDITOR=${EDITOR:-vi}
+
 MODULES=()
 for file in ${__BASEDIR}/modules/*; do
     MODULE=$(basename $file)

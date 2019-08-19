@@ -10,7 +10,8 @@ _meta() {
     echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
-    echo "  setup - install/build deps"
+    echo "  setup       - install/build deps"
+    echo "  edit-source - edit source for a module"
 }
 
 _meta_setup() {
@@ -42,4 +43,17 @@ _meta_setup() {
             $__SETUP_DIR/$name/setup
             ;;
     esac
+}
+
+_meta_edit-source() {
+    if [ $# -ne 1 ]; then
+        echo usage: edit-source MODULE
+    fi
+
+    module=$__BASEDIR/modules/$1
+    if ! [ -f $module ]; then
+        echo no module "$module"
+    else
+        $__EDITOR $module
+    fi
 }
