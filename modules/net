@@ -16,7 +16,9 @@ _net() {
     echo "  serve        - serve a directory"
     echo "  show-ip      - show IP of specified interface"
     echo "  tcp          - send raw TCP"
-    echo "  chrome-proxy - start chrome with proxy"
+    echo "  arp          - show all ARP table entries (IPs only)"
+    echo "  chrome-proxy - start unsafe chrome with proxy"
+    echo "  chrome       - start unsafe chrome"
 }
 
 _net_proxy() {
@@ -90,6 +92,10 @@ _net_show-ip() {
     fi
 }
 
+_net_arp() {
+    arp -a | grep -o '\([0-9]\+\.\?\)\{4\}' | sort | uniq
+}
+
 _net_tcp() {
     ${__BASEDIR}/bin/tcputil $*
 }
@@ -108,6 +114,14 @@ _net_chrome-proxy() {
     "${CHROME_EXECUTABLE_PATH}" \
         --args \
         --proxy-server="${proxy_host}" \
+        --disable-web-security \
+        --user-data-dir \
+        --ignore-certificate-errors
+}
+
+_net_chrome() {
+    "${CHROME_EXECUTABLE_PATH}" \
+        --args \
         --disable-web-security \
         --user-data-dir \
         --ignore-certificate-errors
