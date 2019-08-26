@@ -28,6 +28,7 @@ _sec() {
     echo "  shark           - run some shit against a target"
     echo "  nmap            - nmap some shit"
     echo "  payload         - cat a payload (no args to list available)"
+    echo "  scrape          - start local bookmark scraper listener"
 }
 
 _sec_trufflehog() {
@@ -45,18 +46,18 @@ _sec_trufflehog() {
 }
 
 _sec_grep-todo() {
-	fifo="/tmp/$(head -c4 /dev/urandom | xxd -p | xargs).fifo"
-	mkfifo $fifo
-	# dumb mkfifo tee hack (tee >(subcmd) syntax may not be available)
-	echo -e "----\n$(wc -l < $fifo | xargs) todos found" &
-	{
-		if git status &>/dev/null; then
-			git grep --color=always -ie '\btodo\b' -e '\bxxx\b' -e '\bfixme\b'
-		else
-			grep --color=always -ire '\btodo\b' -e '\bxxx\b' -e '\bfixme\b' .
-		fi
-	} | tee $fifo
-	rm $fifo
+    fifo="/tmp/$(head -c4 /dev/urandom | xxd -p | xargs).fifo"
+    mkfifo $fifo
+    # dumb mkfifo tee hack (tee >(subcmd) syntax may not be available)
+    echo -e "----\n$(wc -l < $fifo | xargs) todos found" &
+    {
+        if git status &>/dev/null; then
+            git grep --color=always -ie '\btodo\b' -e '\bxxx\b' -e '\bfixme\b'
+        else
+            grep --color=always -ire '\btodo\b' -e '\bxxx\b' -e '\bfixme\b' .
+        fi
+    } | tee $fifo
+    rm $fifo
 }
 
 _sec_test-aws-key() {
@@ -134,4 +135,38 @@ _sec_nmap() {
     n_top_ports=${2:-25}
     speed=${3:-3}
     nmap -vvv -T${speed} -Pn --top-ports=$n_top_ports $target
+}
+
+_sec_scrape() {
+    __scrape_usage() {
+        echo 'usage: scrape [start|get] [options..]'
+        echo
+        echo Listen on localhost for data from bookmarklet-based scrapers
+        echo
+        echo subcommands:
+        echo '    start (run) [port]'
+        echo '    get kind [port]'
+        exit 1
+    }
+
+    if [ $# -lt 1 ]; then
+        __scrape_usage
+    fi
+
+    cmd=$1; shift
+    case $cmd in
+        start|run)
+            port=${1:-9753}
+            echo starting scraper on port $port
+            ${__BASEDIR}/bin/scrape-listener -p $port run
+            ;;
+        get)
+            kind=${1:_}
+            port=${2:-9753}
+            curl -sL localhost:$port/_/$kind
+            ;;
+        *)
+            __scrape_usage
+            ;;
+    esac
 }
