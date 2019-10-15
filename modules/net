@@ -102,7 +102,7 @@ _net_tcp() {
 
 
 _net_chrome-proxy() {
-    if [ $* -ne 1 ]; then
+    if [ $# -ne 1 ]; then
         echo usage: chrome-proxy PROXY_ADDR
         echo example: chrome-proxy localhost:8080
         exit 1

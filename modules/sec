@@ -146,6 +146,7 @@ _sec_scrape() {
         echo subcommands:
         echo '    start (run) [port]'
         echo '    get kind [port]'
+
         exit 1
     }
 
