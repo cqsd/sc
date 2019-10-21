@@ -10,8 +10,24 @@ _meta() {
     echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
+    echo "  search      - search for a command"
     echo "  setup       - install/build deps"
     echo "  edit-source - edit source for a module"
+}
+
+_meta_search() {
+    __search_usage() {
+        echo usage: search TERM
+        exit 1
+    }
+    if [ $# -lt 1 ]; then
+        __search_usage
+    fi
+    term=$1; shift
+    echo matching commands:
+    grep -hior -e "^_.*${term}.*()" ${__BASEDIR}/modules \
+        | grep -v short_help \
+        | sed -e 's/_/ /g' -e 's/^ /  /g' -e 's/()//g'
 }
 
 _meta_setup() {
