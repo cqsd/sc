@@ -74,6 +74,9 @@ usage() {
     for module in ${MODULES[@]}; do
         # TODO these should just be vars set per module, not functions
         # why the fuck are they functions
+        #
+        # also this would be really useful to refactor and use to generate the
+        # help for each subcommand programmatically
         short_help_cmd=_${module}_short_help
         short_help_text=$(${short_help_cmd} 2>/dev/null || echo "help not found")
         printf "%${MODULE_FORMAT_LENGTH}s - %s\n" $module "$short_help_text"
