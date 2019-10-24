@@ -2,17 +2,6 @@
 
 SHARK_BASE_DIR=~/src/security/shark
 
-__link_open() {
-    __info opening $1
-    if [ "$(uname)" = "Darwin" ]; then
-        open $1
-    else
-        __warn 'using python; this might cause a flash'
-        sleep 1
-        python -m webbrowser $1
-    fi
-}
-
 _sec_short_help() {
     echo "Security tool shortcuts"
 }
