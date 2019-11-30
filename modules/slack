@@ -19,8 +19,8 @@ _slack_post-webhook() {
         exit 1
     fi
     _slack_url=$1; shift
-	curl -X POST \
-		-H 'Content-type: application/json' \
-		--data "{\"mrkdwn\":true,\"text\":\"${@}\"}" \
+    curl -X POST \
+      -H 'Content-type: application/json' \
+      --data "{\"mrkdwn\":true,\"text\":\"${@}\"}" \
         $_slack_url
 }

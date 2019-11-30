@@ -10,9 +10,9 @@ _meta() {
     echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
-    echo "  search      - search for a command"
-    echo "  setup       - install/build deps"
-    echo "  edit-source - edit source for a module"
+    echo "  search - search for a command"
+    echo "  setup  - install/build deps"
+    echo "  edit   - edit source for a module"
 }
 
 _meta_search() {
@@ -25,9 +25,14 @@ _meta_search() {
     fi
     term=$1; shift
     echo matching commands:
+    # -h hides file name
+    # search all non-private function definitions in modules for matching command
+    # name. note the second grep: __ (dunder) functions are for internal use
     grep -hior -e "^_.*${term}.*()" ${__BASEDIR}/modules \
         | grep -ve short_help -e __ \
-        | sed -e 's/_/ /g' -e 's/^ /  /g' -e 's/()//g'
+        | sed -e 's/_/ /g' \
+              -e 's/^ /  /g' \
+              -e 's/()//g' # clean up the output a bit; this might be a bug
 }
 
 _meta_setup() {
@@ -61,9 +66,13 @@ _meta_setup() {
     esac
 }
 
-_meta_edit-source() {
+_meta_edit() {
     if [ $# -ne 1 ]; then
-        echo usage: edit-source MODULE
+        echo usage: edit MODULE
+        echo
+        echo available modules:
+        echo $__BASEDIR/modules/* | xargs basename | sed 's/^/  /g'
+        exit 1
     fi
 
     module=$__BASEDIR/modules/$1

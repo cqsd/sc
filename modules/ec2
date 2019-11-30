@@ -11,13 +11,35 @@ _ec2() {
     echo "  ls    - list running ec2 instances"
     echo "  ls-sg - list security groups (name and id)"
     echo "  ssh   - ssh into running instance"
+    echo "  start - start a 'scratch' instance with default settings"
+}
+
+__ec2_lab_usage() { echo 'usage: lab {start|stop|ssh}'; }
+_ec2_lab() {
+    echo 'unfinished'
+    exit 1
+    cmd=$1; shift
+    case $cmd in
+        start)
+            if [ -z "${SC_AWS_DEFAULT_AMI}" ]; then
+                echo 'set SC_AWS_DEFAULT_AMI'
+                exit 1
+            fi
+            ;;
+        stop)
+            ;;
+        *)
+            __ec2_lab_usage
+            exit 1
+            ;;
+    esac
 }
 
 _ec2_ls() {
     aws ec2 describe-instances \
         --query='Reservations[*].Instances[*]' \
         $* \
-        | jq '[ .[] | .[] | { iam: .IamInstanceProfile.Arn, subnet: .SubnetId, securityGroups: .SecurityGroups, instance: .InstanceId, privateDns: .PrivateDnsName, public: .PublicDnsName } ]'
+        | jq '[ .[] | .[] | { instanceProfileArn: .IamInstanceProfile.Arn, subnetId: .SubnetId, securityGroups: .SecurityGroups, instanceId: .InstanceId, privateDnsName: .PrivateDnsName, publicDnsName: .PublicDnsName } ]'
 }
 
 _ec2_list-running() {

@@ -27,8 +27,9 @@ _aws_list-ssm-params() {
     #     echo 'usage: list-ssm-params'
     #     exit 1
     # fi
+    # --query "Parameters[?Type=='SecureString']" \
     aws ssm describe-parameters \
-        --query "Parameters[?Type=='SecureString']" \
+        --query "Parameters" \
         $* \
         | jq '.[].Name' \
         | __remove_json_artifacts
