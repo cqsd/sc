@@ -169,9 +169,9 @@ _sec_dork() {
         echo usage: dork subcommand args
         echo
         echo subcommands:
-        echo "    edit - edit the dork file (${__DORK_FILE})"
-        echo '    list - list available dork types'
-        echo '    search TYPE - show available templates for a given type'
+        echo "    edit                   - edit the dork templates file"
+        echo '    list                   - list available dork types'
+        echo '    search TYPE            - show available templates for a given type'
         echo '    template [TYPE] TARGET - if type not provided, templates all dorks'
         exit 1
     }
