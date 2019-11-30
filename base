@@ -65,7 +65,7 @@ for module in ${MODULES[@]}; do
         MODULE_MAX_LENGTH=${#module}
     fi
 done
-MODULE_FORMAT_LENGTH=$((MODULE_MAX_LENGTH + 2))  # 2 space left indent
+MODULE_FORMAT_LENGTH=$((MODULE_MAX_LENGTH))
 
 usage() {
     echo "usage: $(basename $0) <category> [command]"
@@ -79,7 +79,7 @@ usage() {
         # help for each subcommand programmatically
         short_help_cmd=_${module}_short_help
         short_help_text=$(${short_help_cmd} 2>/dev/null || echo "help not found")
-        printf "%${MODULE_FORMAT_LENGTH}s - %s\n" $module "$short_help_text"
+        printf "  %-${MODULE_FORMAT_LENGTH}s - %s\n" $module "$short_help_text"
     done
     echo
     echo "search for commands: sc meta search [term]"
