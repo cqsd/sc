@@ -1,6 +1,8 @@
 #!/bin/bash
 
 SHARK_BASE_DIR=~/src/security/shark
+__DORK_DIR=${__BASEDIR}/data/sec/dork
+__DORK_FILE=${__DORK_DIR}/main
 
 _sec_short_help() {
     echo "Security tool shortcuts"
@@ -18,6 +20,7 @@ _sec() {
     echo "  nmap            - nmap some shit"
     echo "  payload         - cat a payload (no args to list available)"
     echo "  scrape          - start local bookmark scraper listener"
+    echo "  dork            - osint dorks, idk atm"
 }
 
 _sec_trufflehog() {
@@ -127,7 +130,7 @@ _sec_nmap() {
 }
 
 _sec_scrape() {
-    __scrape_usage() {
+    _usage() {
         echo 'usage: scrape [start|get] [options..]'
         echo
         echo Listen on localhost for data from bookmarklet-based scrapers
@@ -140,7 +143,7 @@ _sec_scrape() {
     }
 
     if [ $# -lt 1 ]; then
-        __scrape_usage
+        _usage
     fi
 
     cmd=$1; shift
@@ -156,7 +159,60 @@ _sec_scrape() {
             curl -sL localhost:$port/_/$kind
             ;;
         *)
-            __scrape_usage
+            _usage
+            ;;
+    esac
+}
+
+_sec_dork() {
+    _usage() {
+        echo usage: dork subcommand args
+        echo
+        echo subcommands:
+        echo "    edit - edit the dork file (${__DORK_FILE})"
+        echo '    list - list available dork types'
+        echo '    search TYPE - show available templates for a given type'
+        echo '    template [TYPE] TARGET - if type not provided, templates all dorks'
+        exit 1
+    }
+
+    _template() {
+        target=$1
+        sed -e "s/{{target}}/${1}/g"
+    }
+
+    if [ $# -lt 1 ]; then
+        _usage
+    fi
+
+    cmd=$1; shift
+    case $cmd in
+        edit)
+            $__EDITOR $__DORK_FILE
+            ;;
+        list)
+            cut -d'|' -f1 $__DORK_FILE | sort | uniq
+            ;;
+        search)
+            _type=$1
+            grep -hie "^$_type" $__DORK_FILE | cut -d\| -f2-
+            ;;
+        template)
+            # find dorks of the given type
+            # replace {{target}} with the target
+            if [ $# -eq 1 ]; then
+                target=$1
+                cut -d\| -f2- $__DORK_FILE | _template $target
+            else
+                _type=$1
+                target=$2
+                grep -ih $_type $__DORK_FILE \
+                    | cut -d\| -f2- \
+                    | _template $target
+            fi
+            ;;
+        *)
+            _usage
             ;;
     esac
 }
