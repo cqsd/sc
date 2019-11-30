@@ -170,8 +170,7 @@ _sec_dork() {
         echo
         echo subcommands:
         echo "    edit                   - edit the dork templates file"
-        echo '    list                   - list available dork types'
-        echo '    search TYPE            - show available templates for a given type'
+        echo '    list [TYPE]            - show available templates [for given type]'
         echo '    template [TYPE] TARGET - if type not provided, templates all dorks'
         exit 1
     }
@@ -191,11 +190,12 @@ _sec_dork() {
             $__EDITOR $__DORK_FILE
             ;;
         list)
-            cut -d'|' -f1 $__DORK_FILE | sort | uniq
-            ;;
-        search)
-            _type=$1
-            grep -hie "^$_type" $__DORK_FILE | cut -d\| -f2-
+            if [ $# -eq 1 ]; then
+                _type=$1
+                grep -hie "^$_type" $__DORK_FILE | cut -d\| -f2-
+            else
+                cut -d'|' -f1 $__DORK_FILE | sort | uniq
+            fi
             ;;
         template)
             # find dorks of the given type
