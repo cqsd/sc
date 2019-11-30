@@ -19,7 +19,7 @@
 # the top level usage text. Run this script with no arguments to see what I
 # mean.
 #
-# ***If you can think of a good non-ridiculous way to namespace the functions,
+# ***If you can think of a non-ridiculous way to namespace the functions,
 # please let me know.***
 
 set -eo pipefail  # unsure if this is a good idea, but hasn't been annoying yet
