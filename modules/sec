@@ -14,6 +14,7 @@ _sec() {
     echo "available subcommands are:"
     echo "  trufflehog      - run trufflehog (you can pass args)"
     echo "  grep-todo       - grep common todo strings in pwd"
+    echo "  grep-todo-2     - grep common todo strings part 2"
     echo "  test-aws-key    - grep common todo strings in pwd"
     echo "  check-fish-read - check if fish has saved any secrets typed into read -s"
     echo "  shark           - run some shit against a target"
@@ -38,6 +39,7 @@ _sec_trufflehog() {
 }
 
 _sec_grep-todo() {
+    # edit: what the FUCK is this for
     fifo="/tmp/$(head -c4 /dev/urandom | xxd -p | xargs).fifo"
     mkfifo $fifo
     # dumb mkfifo tee hack (tee >(subcmd) syntax may not be available)
@@ -50,6 +52,30 @@ _sec_grep-todo() {
         fi
     } | tee $fifo
     rm $fifo
+}
+
+_sec_grep-todo-2() {
+    patterns=(
+        fixme
+        fuck
+        hack
+        idk
+        lmao
+        lol
+        rofl
+        shit
+        xxx
+        "don'\?t"
+    )
+    regex_string=todo
+    # eventual goal is to build something like this:
+    # '\b\(todo\|xxx\|fixme\)\b'
+    # we add the bars in the loop then just sub the thing inside the
+    # parens when we invoke grep
+    for pattern in ${patterns[@]}; do
+        regex_string="$regex_string\|$pattern"
+    done
+    grep --color=always -in "\b\($regex_string\)\b" $@
 }
 
 _sec_test-aws-key() {
