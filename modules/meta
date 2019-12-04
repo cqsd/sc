@@ -10,9 +10,10 @@ _meta() {
     echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
-    echo "  search - search for a command"
-    echo "  setup  - install/build deps"
-    echo "  edit   - edit source for a module"
+    echo "  search        - search for a command"
+    echo "  setup         - install/build deps"
+    echo "  edit          - edit source for a module"
+    echo "  create-module - create a new module"
 }
 
 _meta_search() {
@@ -81,4 +82,22 @@ _meta_edit() {
     else
         $__EDITOR $module
     fi
+}
+
+_meta_create-module() {
+    if [ $# -ne 1 ]; then
+        echo usage: new-module NAME
+        exit 1
+    fi
+
+    name=$1
+    if [ -f $__BASEDIR/modules/$name ]; then
+        echo a module named $1 already exists
+        exit 1
+    fi
+
+    template=$__BASEDIR/data/meta/module-template
+    module=$__BASEDIR/modules/$name
+    cat $template | sed "s/{{name}}/${name}/g" > $module
+    _meta_edit $name
 }
