@@ -13,6 +13,7 @@ _meta() {
     echo "  search        - search for a command"
     echo "  setup         - install/build deps"
     echo "  edit          - edit source for a module"
+    echo "  show          - show the definition for a command"
     echo "  create-module - create a new module"
 }
 
@@ -82,6 +83,20 @@ _meta_edit() {
     else
         $__EDITOR $module
     fi
+}
+
+_meta_show() {
+    if [ $# -ne 2 ]; then
+        echo usage: show module subcommand
+        exit 1
+    fi
+
+    module=$1
+    subcommand=$2
+    full_command=_${module}_${subcommand}
+    # due to _where_ this gets sourced (ie, in ../base), the global namespace
+    # is already polluted with all the function definitions
+    declare -f $full_command  # | sed -e '1,2d;$d' # remove signature and braces
 }
 
 _meta_create-module() {

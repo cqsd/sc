@@ -12,7 +12,7 @@ _ecr() {
     echo "available subcommands are:"
     echo "  list-repos  - list ECR repositories"
     echo "  list-images - list images in a repository"
-    echo "  login       - logs into ecr with default (red) profile"
+    echo "  login       - logs into ecr with default profile"
 }
 
 _ecr_list-repos() {
