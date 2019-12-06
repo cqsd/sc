@@ -17,7 +17,6 @@ available categories are:
   scratch - stuff that might not be useful at all
   sec     - Security tool shortcuts
   slack   - Slack conveniences
-  twitter - Twitter shit (mostly web ui re)
   utils   - idk
 
 search for commands: sc meta search [term]
