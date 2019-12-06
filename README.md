@@ -1,18 +1,24 @@
-## utilities
- - [make shit](https://swcarpentry.github.io/make-novice/reference.html)
-
-## TODO
-instead of `_module_command() { ... }` you _could_ source whichever module gets
-passed, though namespacing might be hard. helptext would just be in a comment at
-the top of the file I guess, maybe with a special identifier like
-
+## hacky bash stuff
 ```
-#:show-pass       - show item in local keychain (OS X only)
-#:xargs-edit (xe) - cut -d: -f1 | sort | uniq | xargs \${EDITOR:-vi}
-#:wayback         - wayback machine search (opens a browser) (hermit!!)
-#:normie-check    - find people who put their employer in their twitter bio
-#:test-loggers    - test output of logging functions
-```
+uid=501|~/b/s/shortcuts ^master $ sc
+usage: sc <category> [command]
 
-or you could even put the shit as a docstring... ah shit, we're gonna write a
-PL parser in bash eventually, aren't we
+available categories are:
+  aws     - whatever
+  ec2     - EC2 shortcuts
+  ecr     - ECR shortcuts
+  git     - Git conveniences
+  github  - github shortcuts
+  graphql - graphql thangs
+  lambda  - Lambda shortcuts
+  meta    - setup stuff I guess
+  misc    - Uncategorized
+  net     - Network shortcuts
+  scratch - stuff that might not be useful at all
+  sec     - Security tool shortcuts
+  slack   - Slack conveniences
+  twitter - Twitter shit (mostly web ui re)
+  utils   - idk
+
+search for commands: sc meta search [term]
+```
