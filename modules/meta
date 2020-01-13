@@ -116,3 +116,10 @@ _meta_create-module() {
     cat $template | sed "s/{{name}}/${name}/g" > $module
     _meta_edit $name
 }
+
+_meta_test-loggers() {
+    __success ${1:-"test success ||||||||||||||||"}
+    __info    ${1:-"test info    ||||||||||||||||"}
+    __warn    ${1:-"test warn    ||||||||||||||||"}
+    __error   ${1:-"test error   ||||||||||||||||"}
+}

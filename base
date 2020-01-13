@@ -31,6 +31,23 @@ __error()   { echo -e "\033[31m[!] $@\033[0m"; }  # [!] red
 
 __remove_json_artifacts() { tr -d '[]",'; }
 
+__requires() {
+    for cmd in "$@"; do
+        if ! command -v $cmd &>/dev/null; then
+            echo "this command requires $cmd. please install $cmd"
+            exit 1
+        fi
+    done
+}
+
+__requires_one_of() {
+    for cmd in "$@"; do
+        command -v $cmd &>/dev/null && echo $cmd && return
+    done
+    echo "this command requires one of $@" >&2
+    exit 1
+}
+
 __BASEDIR=$(dirname "$(readlink "$0")")
 __CONFIG_DIR=$__BASEDIR/config
 __BIN_DIR=$__BASEDIR/bin

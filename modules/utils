@@ -9,12 +9,15 @@ _utils() {
     echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
-    echo "  view-json           - pretty view json (jq -C into a pager) (better than bat!)"
+    echo "  view-json           - pretty view json (jq -C into a pager)"
     echo "  calc                - do simple calculations with bc (calc '1/2*5.1')"
     echo "  print-unicode       - print a unicode character by codepoint"
     echo "  start-elasticsearch - kinda wacky"
     echo "  stop-elasticsearch  - kinda wacky"
     echo "  graphiql            - run browsable graphiql"
+    echo "  date-iso            - ISO-8601 date (not all date bins have -I)"
+    echo "  verify-gpg          - verify PGP signature for a file (lol..)"
+
 }
 
 _utils_view-json() {
@@ -84,4 +87,18 @@ _utils_graphiql() {
             __graphiql_usage
             ;;
     esac
+}
+
+_utils_date-iso() {
+    date +%Y-%m-%dT%H:%M:%S%z
+}
+
+_utils_verify-gpg() {
+    gpg_cmd=$(__requires_one_of gpg gpg2)
+    if ! [ $# -eq 2 ]; then
+        echo 'usage: verify-gpg SIGNATURE_FILE KEY_FINGERPRINT'
+        exit 1
+    fi
+    $gpg_cmd --recv-keys "$2"
+    $gpg_cmd --verify "$1"
 }
