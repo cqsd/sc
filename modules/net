@@ -10,34 +10,12 @@ _net() {
     echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
     echo
     echo "available subcommands are:"
-    echo "  proxy        - proxy with netcat"
     echo "  cert-chain   - get the cert chain for a TLS endpoint"
     echo "  serve        - serve a directory"
     echo "  show-ip      - show IP of specified interface"
-    echo "  tcp          - send raw TCP"
     echo "  arp          - show all ARP table entries (IPs only)"
+    echo "  chrome       - start chrome"
     echo "  chrome-proxy - start unsafe chrome with proxy"
-    echo "  chrome       - start unsafe chrome"
-}
-
-_net_proxy() {
-    # TODO -v is not logging connection?
-    if ! [ $# -eq 3 ]; then
-        echo 'usage: net proxy LISTENING_PORT REMOTE PORT'
-        exit 1
-    fi
-    listen_port=$1
-    remote_host=$2
-    remote_port=$3
-
-    fifo=/tmp/_nc-proxy-fifo-$(head -c 12 /dev/urandom | xxd -p)
-    _cleanup() { rm $fifo; }
-    trap _cleanup EXIT
-
-    mkfifo $fifo
-    __info Made fifo $fifo
-    __info Listening on $listen_port, proxying to $remote_host:$remote_port
-    nc -vl $listen_port < $fifo | nc $remote_host $remote_port > $fifo
 }
 
 _net_cert-chain() {
@@ -85,33 +63,31 @@ _net_arp() {
     arp -a | grep -o '\([0-9]\+\.\?\)\{4\}' | sort | uniq
 }
 
-_net_tcp() {
-    ${__BASEDIR}/bin/tcputil $*
+_net_chrome() {
+    if [ -z "${CHROME_EXECUTABLE_PATH}" ]; then
+        echo please set CHROME_EXECUTABLE_PATH in env or $__BASEDIR/config/net
+        exit 1
+    fi
+    "${CHROME_EXECUTABLE_PATH}" \
+        --args \
+        $@
 }
-
 
 _net_chrome-proxy() {
     if [ $# -ne 1 ]; then
         echo usage: chrome-proxy PROXY_ADDR
         echo example: chrome-proxy localhost:8080
         exit 1
-    elif [ -z "${CHROME_EXECUTABLE_PATH}" ]; then
-        echo please set CHROME_EXECUTABLE_PATH in env or $__BASEDIR/config/net
-        exit 1
     fi
+
+    data_dir=$(mktemp -d)
+    trap "rm -fr $data_dir" SIGINT EXIT
+
     proxy_host=$1
-    "${CHROME_EXECUTABLE_PATH}" \
-        --args \
+    _net_chrome \
         --proxy-server="${proxy_host}" \
         --disable-web-security \
-        --user-data-dir \
-        --ignore-certificate-errors
-}
-
-_net_chrome() {
-    "${CHROME_EXECUTABLE_PATH}" \
-        --args \
-        --disable-web-security \
-        --user-data-dir \
+        --user-data-dir="$data_dir" \
+        --disk-cache-size=0 \
         --ignore-certificate-errors
 }
