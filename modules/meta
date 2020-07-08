@@ -1,23 +1,9 @@
 #!/bin/bash
+### setup, search, edit, etc.
 
 __SETUP_DIR=$__BASEDIR/setup
 
-_meta_short_help() {
-    echo "setup stuff I guess"
-}
-
-_meta() {
-    echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
-    echo
-    echo "available subcommands are:"
-    echo "  search        - search for a command"
-    echo "  setup         - install/build deps"
-    echo "  edit          - edit source for a module"
-    echo "  show          - show the definition for a command"
-    echo "  create-module - create a new module"
-}
-
-_meta_search() {
+_meta_search() { ### search for a command
     __search_usage() {
         echo usage: search TERM
         exit 1
@@ -37,7 +23,7 @@ _meta_search() {
               -e 's/()//g' # clean up the output a bit; this might be a bug
 }
 
-_meta_setup() {
+_meta_setup() { ### install/build deps (mostly unimplemented)
     __setup_usage() {
         echo usage: setup ITEM
         echo
@@ -68,7 +54,7 @@ _meta_setup() {
     esac
 }
 
-_meta_edit() {
+_meta_edit() { ### edit source for a module
     if [ $# -ne 1 ]; then
         echo usage: edit MODULE
         echo
@@ -85,7 +71,7 @@ _meta_edit() {
     fi
 }
 
-_meta_show() {
+_meta_show() { ### show source for a command
     if [ $# -ne 2 ]; then
         echo usage: show module subcommand
         exit 1
@@ -99,7 +85,7 @@ _meta_show() {
     declare -f $full_command  # | sed -e '1,2d;$d' # remove signature and braces
 }
 
-_meta_create-module() {
+_meta_create-module() { ### create a new module
     if [ $# -ne 1 ]; then
         echo usage: new-module NAME
         exit 1

@@ -1,15 +1,5 @@
 #!/bin/bash
-
-_scratch_short_help() {
-    echo "stuff that might not be useful at all"
-}
-
-_scratch() {
-    echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
-    echo
-    echo "available subcommands are:"
-    echo "  qemu - idfk"
-}
+### stuff that might not be useful at all
 
 _scratch_qemu() {
     if [ $# -ne 1 ]; then

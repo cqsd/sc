@@ -1,4 +1,5 @@
 #!/bin/bash
+### Uncategorized
 
 __link_open() {
     __info opening $1
@@ -11,22 +12,7 @@ __link_open() {
     fi
 }
 
-_misc_short_help() {
-    echo Uncategorized
-}
-
-_misc() {
-    echo usage: $(basename $0) ${FUNCNAME[0]} subcommand
-    echo
-    echo available subcommands are:
-    echo "  show-pass       - show item in local keychain (OS X only)"
-    echo "  xargs-edit (xe) - cut -d: -f1 | sort | uniq | xargs \${EDITOR:-vi}"
-    echo "  wayback         - wayback machine search (opens a browser) (hermit!!)"
-    echo "  normie-check    - find people who put their employer in their twitter bio"
-    echo "  test-loggers    - test output of logging functions"
-}
-
-_misc_show-pass() {
+_misc_show-pass() { ### show item in local keychain (OS X only)
     if [ $# -lt 1 ]; then
         echo 'usage: show-pass name'
         exit 1
@@ -35,7 +21,7 @@ _misc_show-pass() {
     security find-generic-password -s "$name" -w $*
 }
 
-_misc_xargs-edit() {
+_misc_xargs-edit() { ### cut -d: -f1 | sort | uniq | xargs \${EDITOR:-vi}
     cut -d: -f1 | sort | uniq | xargs ${EDITOR:-vi}
 }
 
@@ -43,17 +29,55 @@ _misc_xe() {
     _misc_xargs-edit
 }
 
-_misc_wayback() {
-    if [ $# -lt 1 ]; then
-        echo 'usage: wayback SITE'
+_misc_wayback() { ### wayback machine search/save
+    __wayback_usage() {
+        echo 'usage: wayback [save|search] URL'
         exit 1
+    }
+
+    if [ $# -lt 1 ]; then
+        __wayback_usage
     fi
-    prefix='http://web.archive.org/web/*/'
-    query=$prefix$1
-    __link_open $query
+
+    __wayback_save() {
+        if [ $# -lt 1 ]; then
+            exit 1
+            echo 'usage: save URL'
+        fi
+        url=$1
+        resp=$(curl -sI "https://web.archive.org/save/${url}" \
+          -H 'accept: application/json' \
+          | grep '^content-location:' \
+          | cut -d' ' -f2 \
+          | xargs)
+        echo https://web.archive.org/save/${resp}
+    }
+
+    __wayback_search() {
+        if [ $# -lt 1 ]; then
+            echo 'usage: wayback URL'
+            exit 1
+        fi
+        prefix='http://web.archive.org/web/*/'
+        query=$prefix$1
+        __link_open $query
+    }
+
+    cmd=$1; shift
+    case $cmd in
+        save)
+            __wayback_save "$@"
+            ;;
+        search)
+            __wayback_search "$@"
+            ;;
+        *)
+            __wayback_usage
+            ;;
+    esac
 }
 
-_misc_normie-check() {
+_misc_normie-check() { ### find people who put their employer in their twitter bio
     if [ $# -lt 1 ]; then
         echo 'usage: normie-check COMPANY_NAME'
         exit 1

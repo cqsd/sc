@@ -1,19 +1,7 @@
 #!/bin/bash
+### sparse aws shortcuts (deprecated)
 
-_aws_short_help() {
-    echo "whatever"
-}
-
-_aws() {
-    echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
-    echo
-    echo "available subcommands are:"
-    echo "  list-profiles   - list aws profiles"
-    echo "  list-ssm-params - list ssm parameters"
-    echo "  get-ssm-param   - get a particular ssm parameter (with decryption)"
-}
-
-_aws_list-profiles() {
+_aws_list-profiles() { ### list aws profiles
     if [ -f ~/.aws/config ]; then
         grep '\[.*\]' ~/.aws/config | sed -e 's/\[profile//g' -e 's/\]//g' | tr -d ' '
     else
@@ -22,7 +10,7 @@ _aws_list-profiles() {
 }
 
 # for any zone
-_aws_list-ssm-params() {
+_aws_list-ssm-params() { ### list ssm parameters
     # if [ $# -lt 1 ]; then
     #     echo 'usage: list-ssm-params'
     #     exit 1
@@ -36,7 +24,7 @@ _aws_list-ssm-params() {
 }
 
 # for any zone
-_aws_get-ssm-param() {
+_aws_get-ssm-param() { ### get and decrypt an ssm parameter
     if [ $# -lt 1 ]; then
         echo 'usage: get-ssm-param NAME'
         exit 1

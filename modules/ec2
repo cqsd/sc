@@ -1,21 +1,8 @@
 #!/bin/bash
-
-_ec2_short_help() {
-    echo "EC2 shortcuts"
-}
-
-_ec2() {
-    echo "usage: $(basename $0) ${FUNCNAME[0]} SUBCMD"
-    echo
-    echo "available subcommands are:"
-    echo "  ls    - list running ec2 instances"
-    echo "  ls-sg - list security groups (name and id)"
-    echo "  ssh   - ssh into running instance"
-    echo "  start - start a 'scratch' instance with default settings"
-}
+### sparse but actually kinda useful ec2 shortcuts
 
 __ec2_lab_usage() { echo 'usage: lab {start|stop|ssh}'; }
-_ec2_lab() {
+_ec2_lab() { ### manage scratch instances for lab (todo)
     echo 'unfinished'
     exit 1
     cmd=$1; shift
@@ -35,7 +22,7 @@ _ec2_lab() {
     esac
 }
 
-_ec2_ls() {
+_ec2_ls() { ### list running ec2 instances
     aws ec2 describe-instances \
         --query='Reservations[*].Instances[*]' \
         $* \
@@ -59,11 +46,11 @@ _ec2_rds_ls() {
     aws rds describe-db-instances $*
 }
 
-_ec2_ls-sg() {
+_ec2_ls-sg() { ### list security groups (name and id)
     aws ec2 describe-security-groups --query 'SecurityGroups[*].[GroupName,GroupId]'
 }
 
-_ec2_ssh() {
+_ec2_ssh() { ### ssh into running instance
     if [ $# -lt 1 ]; then
         echo 'usage: ssh <IP or domain> [user]'
         exit 1

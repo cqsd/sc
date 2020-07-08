@@ -1,26 +1,14 @@
 #!/bin/bash
+### sparse ecr shortcuts
 
 source $__CONFIG_DIR/aws-config
 
-_ecr_short_help() {
-    echo "ECR shortcuts"
-}
-
-_ecr() {
-    echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
-    echo
-    echo "available subcommands are:"
-    echo "  list-repos  - list ECR repositories"
-    echo "  list-images - list images in a repository"
-    echo "  login       - logs into ecr with default profile"
-}
-
-_ecr_list-repos() {
+_ecr_list-repos() { ### list ECR repositories
     aws ecr describe-repositories \
         | jq '[ .repositories[] | {name: .repositoryName, arn: .repositoryArn, uri: .repositoryUri } ]'
 }
 
-_ecr_list-images() {
+_ecr_list-images() { ### list images in a repository
     if [ $# -lt 1 ]; then
         echo 'usage: list-images REPO_NAME (run list-repos for a list)'
         exit 1
@@ -31,6 +19,6 @@ _ecr_list-images() {
         | jq '[ .imageIds[] | { tag: .imageTag, digest: .imageDigest } ]'
 }
 
-_ecr_login() {
+_ecr_login() { ### log into ecr with default profile
     exec $(aws-vault exec ${AWS_VAULT_DEFAULT_PROFILE} -- aws ecr get-login --no-include-email)
 }

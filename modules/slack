@@ -1,17 +1,7 @@
 #!/bin/bash
+### slack shortcuts
 
-_slack_short_help() {
-    echo "Slack conveniences"
-}
-
-_slack() {
-    echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
-    echo
-    echo "available subcommands are:"
-    echo "  post-webhook - send slack-flavored markdown"
-}
-
-_slack_post-webhook() {
+_slack_post-webhook() { ### send slack-flavored markdown
     if [ $# -lt 2 ]; then
         echo "usage: ${FUNCNAME[0]} WEBHOOK TEXT"
         echo

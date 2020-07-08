@@ -1,19 +1,7 @@
 #!/bin/bash
+### sparse git shortcuts
 
-_git_short_help() {
-    echo "Git conveniences"
-}
-
-_git() {
-    echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
-    echo
-    echo "available subcommands are:"
-    echo "  remove-from-history - Fully remove a file from git history"
-    echo "  fetch-repo-file     - Download a single file from a Github repository"
-    echo "  count-commits       - git rev-list --count --all"
-}
-
-_git_remove-from-history() {
+_git_remove-from-history() { ### Fully remove a file from git history
     if [ $# -lt 1 ]; then
         echo 'usage: remove-from-history path/to/file'
         exit 1
@@ -28,7 +16,7 @@ git filter-branch --force --index-filter \\
 EOF
 }
 
-_git_fetch-repo-file() {
+_git_fetch-repo-file() { ### Download a single file from a Github repository
     if [ $# -lt 1 ]; then
         echo 'usage: fetch-repo-file filepath'
         exit 1
@@ -41,6 +29,6 @@ _git_fetch-repo-file() {
     __error "go search for the curl, it's in a gist somewhere"
 }
 
-_git_count-commits() {
+_git_count-commits() { ### git rev-list --count --all
     git rev-list --count --all
 }

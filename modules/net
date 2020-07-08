@@ -1,24 +1,9 @@
 #!/bin/bash
+### Network shortcuts
 
 source $__CONFIG_DIR/net
 
-_net_short_help() {
-    echo "Network shortcuts"
-}
-
-_net() {
-    echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
-    echo
-    echo "available subcommands are:"
-    echo "  cert-chain   - get the cert chain for a TLS endpoint"
-    echo "  serve        - serve a directory"
-    echo "  show-ip      - show IP of specified interface"
-    echo "  arp          - show all ARP table entries (IPs only)"
-    echo "  chrome       - start chrome"
-    echo "  chrome-proxy - start unsafe chrome with proxy"
-}
-
-_net_cert-chain() {
+_net_cert-chain() { ### get the cert chain for a TLS endpoint
     if [ $# -lt 1 ]; then
         echo 'usage: net cert-chain DOMAIN [PORT]'
         exit 1
@@ -28,7 +13,7 @@ _net_cert-chain() {
     openssl s_client -connect $domain:$port </dev/null 2>/dev/null
 }
 
-_net_serve() {
+_net_serve() { ### serve a directory
     if [ $# -lt 1 ]; then
         echo 'usage: serve [DIR [PORT]]'
         exit 1
@@ -44,7 +29,7 @@ __net_parse_ifconfig() {
     grep 'inet\b' | awk '{ print $2 }' | cut -d/ -f1
 }
 
-_net_show-ip() {
+_net_show-ip() { ### show IP of specified interface
     if [ $# -ne 1 ]; then
         echo 'usage: show-ip IFNAME'
         exit 1
@@ -59,11 +44,11 @@ _net_show-ip() {
     fi
 }
 
-_net_arp() {
+_net_arp() { ### show all ARP table entries (IPs only)
     arp -a | grep -o '\([0-9]\+\.\?\)\{4\}' | sort | uniq
 }
 
-_net_chrome() {
+_net_chrome() { ### start chrome
     if [ -z "${CHROME_EXECUTABLE_PATH}" ]; then
         echo please set CHROME_EXECUTABLE_PATH in env or $__BASEDIR/config/net
         exit 1
@@ -73,7 +58,7 @@ _net_chrome() {
         $@
 }
 
-_net_chrome-proxy() {
+_net_chrome-proxy() { ### start unsafe chrome with proxy
     if [ $# -ne 1 ]; then
         echo usage: chrome-proxy PROXY_ADDR
         echo example: chrome-proxy localhost:8080

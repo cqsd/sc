@@ -51,6 +51,7 @@ __requires_one_of() {
 __BASEDIR=$(dirname "$(readlink "$0")")
 __CONFIG_DIR=$__BASEDIR/config
 __BIN_DIR=$__BASEDIR/bin
+__DATA_DIR=$__BASEDIR/data
 
 __EDITOR=${EDITOR:-vi}
 
@@ -73,30 +74,88 @@ for file in ${__BASEDIR}/modules/*; do
     esac
 done
 
-# format the subcommands right-justified with 2 spaces indentation for the
-# whole list
-MODULE_MAX_LENGTH=-1
-for module in ${MODULES[@]}; do
-    # ${#var} => str length of ${var}
-    if [ ${#module} -gt $MODULE_MAX_LENGTH ]; then
-        MODULE_MAX_LENGTH=${#module}
-    fi
-done
-MODULE_FORMAT_LENGTH=$((MODULE_MAX_LENGTH))
+# return the length of the longest arg
+max_length() {
+    MAX_LENGTH=-1
+    for s in $@; do
+        # ${#var} => str length of ${var}
+        if [ ${#s} -gt $MAX_LENGTH ]; then
+            MAX_LENGTH=${#s}
+        fi
+    done
+    echo $((MAX_LENGTH))  # dont think the math mode is necessary idc
+}
+
+print_helptext() {
+    left_pad_length=$1
+    name=$2
+    helptext=$3
+    printf "  %-${left_pad_length}s - %s\n" $name "${helptext:-no help found}"
+}
+
+# grep for top level docstring in a module
+module_docstring() {
+    module=$1
+    {
+        grep -o '^### .*$' $__BASEDIR/modules/$module \
+            | sed -e 's/^###//g' \
+                  -e 's/^ *//g'
+    } || true
+}
+
+# grep for "public" function definitions in a module (includes docstrings)
+function_definitions() {
+    module=$1
+    grep -hior -e "^_${module}_.*().*$" ${__BASEDIR}/modules/$module
+}
+
+function_name_from_definition() {
+    grep -v '^__' \
+        | sed -e 's/_/ /g' \
+              -e 's/ *{.*//g' \
+              -e 's/^ *//g' \
+              -e 's/()//g' \
+        | cut -d' ' -f2-
+}
+
+function_names() {
+    function_definitions $1 | function_name_from_definition
+}
+
+# ngl this is pretty fuckin bad
+function_docstring_from_definition() {
+    {
+        grep -o '### .*$' \
+            | sed -e 's/^###//g' \
+                  -e 's/^ *//g'
+    } || true # for when grep finds nothing
+}
+
+# print function docstrings in a module. this relies on you (me) always
+# defining functions a certain way. there's already a lot of that in this
+# project, so I'll tolerate it, but it's obviously not great...
+module_function_usage() {
+    module=$1
+    # doing the same grep a bunch of times is simpler to write than building
+    # and managing arrays in bash (cuz i don't know how to use a bash hash and
+    # i don't care rn)
+    left_pad_length=$(max_length $(function_names $module))
+    IFS=$'\n'
+    for definition in $(function_definitions $module); do
+        name=$(echo $definition | function_name_from_definition)
+        docstring=$(echo $definition | function_docstring_from_definition)
+        print_helptext $left_pad_length "$name" "$docstring"
+    done
+    unset IFS
+}
 
 usage() {
     echo "usage: $(basename $0) <category> [command]"
     echo
     echo "available categories are:"
+    left_pad_length=$(max_length ${MODULES[@]})
     for module in ${MODULES[@]}; do
-        # TODO these should just be vars set per module, not functions
-        # why the fuck are they functions
-        #
-        # also this would be really useful to refactor and use to generate the
-        # help for each subcommand programmatically
-        short_help_cmd=_${module}_short_help
-        short_help_text=$(${short_help_cmd} 2>/dev/null || echo "help not found")
-        printf "  %-${MODULE_FORMAT_LENGTH}s - %s\n" $module "$short_help_text"
+        print_helptext $left_pad_length $module "$(module_docstring $module)"
     done
     echo
     echo "search for commands: sc meta search [term]"
@@ -118,7 +177,9 @@ __handle_cmd() {
             ;;
         *)
             shift
-            if ! [ -z $1 ]; then
+            if [ $# -eq 0 ]; then
+                module_function_usage $cmd
+            elif ! [ -z $1 ]; then
                 subcmd=$1
                 shift
                 full_cmd=_${cmd}_$subcmd
@@ -126,8 +187,6 @@ __handle_cmd() {
                     __error $cmd $subcmd not found
                     exit 1
                 else
-                    # ${full_cmd} $@
-                    # __info '$@' is getting quoted rn, which might cause weirdness
                     ${full_cmd} "$@"
                 fi
             else
