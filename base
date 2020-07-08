@@ -1,7 +1,6 @@
 #!/bin/bash
 # bash hax
-# rui <rui@uwu.zone>
-
+#
 # Every file in ./modules/ gets sourced. Each file is a "module" That means
 # everything's gonna be in this one top level namespace That means submodules
 # can't easily import shit
@@ -10,19 +9,9 @@
 # and an underscore. So a hello command in the example module would be defined
 # as _example_hello()
 #
-# Every module should define a function named the module name. So the dns
-# module defines a dns function. This is called as the subcommand help, so it
-# should just echo usage info.
-#
-# Every module can optionally define a short help function,
-# ${module}_short_help, which is called to generate the one-line usage hint in
-# the top level usage text. Run this script with no arguments to see what I
-# mean.
-#
-# ***If you can think of a non-ridiculous way to namespace the functions,
-# please let me know.***
+# Open any module to see how helptext is defined.
 
-set -eo pipefail  # unsure if this is a good idea, but hasn't been annoying yet
+set -eo pipefail
 
 __success() { echo -e "\033[32m[+] $@\033[0m"; }  # [+] green
 __info()    { echo -e "\033[34m[+] $@\033[0m"; }  # [+] blue
@@ -60,16 +49,14 @@ for file in ${__BASEDIR}/modules/*; do
     MODULE=$(basename $file)
     case $MODULE in
         _*)
-            # skip anything that has a _ at the start of its filename
+            # skip anything that has a _ at the start of its filename (these
+            # are "ignored")
             continue
             ;;
         *)
-            # "load" the module
+            # "load" the module. TODO do this on demand; we don't need to load
+            # every single one
             source $file
-            # Every module should define a function with a name == the file
-            # name. Additionally, each one can have a _${filename}_help()
-            # function which will get displayed in top-level help.
-            # It'll get called as help.
             MODULES+=($MODULE)
     esac
 done
@@ -161,15 +148,9 @@ usage() {
     echo "search for commands: sc meta search [term]"
 }
 
-# XXX define a high level handle cmd so you can write subcommands for the subcommads
-# TODO: this actually needs to wrap this whole base script or else the modules list
-# will be wrong for sub-subcommands. We'll need an alternate way to print the usage
-# text though (don't think you can define usage multiple times, and idk if you can
-# even define a function in a function)
 __handle_cmd() {
-    # prefixing with _ to prevent overwriting real commands (the side effects
-    # won't persist, but it can occasionally screw you up when writing modules)
-    # do a search for _\$; should be isolated to the case block for the moment
+    # "public" "module" functions are prefixed with a _. TODO: only source the
+    # module that's needed rather than sourcing all of them every time
     cmd=$1
     case $cmd in
         ''|h|-h|help|--help)
