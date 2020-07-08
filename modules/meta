@@ -63,11 +63,15 @@ _meta_edit() { ### edit source for a module
         exit 1
     fi
 
-    module=$__BASEDIR/modules/$1
-    if ! [ -f $module ]; then
-        echo no module "$module"
+    if [ $1 = 'base' ]; then
+        $__EDITOR $__BASEDIR/base
     else
-        $__EDITOR $module
+        module=$__BASEDIR/modules/$1
+        if ! [ -f $module ]; then
+            echo no module "$module"
+        else
+            $__EDITOR $module
+        fi
     fi
 }
 
