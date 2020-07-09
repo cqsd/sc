@@ -1,20 +1,12 @@
 #!/bin/bash
 
-_{{name}}_short_help() {
-    echo "todo"
-}
+### module description
 
-_{{name}}() {
-    echo "usage: $(basename $0) ${FUNCNAME[0]} subcommand"
-    echo
-    echo "available subcommands are:"
-    echo "  subcommand - todo"
-}
-
-_{{name}}_subcommand() {
+_{{name}}_subcommand() {  ### subcommand description
+    __sc_requires_one_of nc ncat
     if [ $# -lt 1 ]; then
         echo 'usage: subcommand args'
         exit 1
     fi
-    __error todo
+    __sc_success hello "$@"
 }

@@ -3,7 +3,7 @@
 
 __sc_SETUP_DIR=$__sc_BASEDIR/setup
 
-_meta_search() { ### search for a command
+_meta_search() { ### search for a command by keyword
     __sc_search_usage() {
         echo usage: search TERM
         exit 1
@@ -23,7 +23,7 @@ _meta_search() { ### search for a command
               -e 's/()//g' # clean up the output a bit; this might be a bug
 }
 
-_meta_setup() { ### install/build deps (mostly unimplemented)
+_meta_setup() { ### install/build deps (unimplemented don't use)
     __sc_setup_usage() {
         echo usage: setup ITEM
         echo
@@ -142,4 +142,11 @@ _meta_generate-fish-completions() { ### generate fish completions file
         __sc_to_module_commands_fish_completion $module
         echo
     done
+}
+
+_meta_update-fish-completions() { ### update fish completions file
+    mkdir -p ~/.config/fish/completions
+    __sc_info writing new completions to ~/.config/fish/completions/sc.fish
+    _meta_generate-fish-completions > ~/.config/fish/completions/sc.fish
+    __sc_info done
 }
