@@ -1,7 +1,7 @@
 #!/bin/bash
 ### sparse ecr shortcuts
 
-source $__CONFIG_DIR/aws-config
+source $__sc_CONFIG_DIR/aws-config
 
 _ecr_list-repos() { ### list ECR repositories
     aws ecr describe-repositories \

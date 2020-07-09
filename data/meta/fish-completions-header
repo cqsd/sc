@@ -1,0 +1,17 @@
+# this is mostly patterned after/stolen from the git completions
+
+# check if the current invocation already has a command. 0 if yes
+function __fish_sc_needs_command
+    set -l cmd (commandline -opc)
+    set -e cmd[1]
+    echo $cmd
+    test -z "$cmd"; and return 0
+end
+
+# check if the command in use is the given command
+function __fish_sc_using_command
+    set -l cmd (__fish_sc_needs_command)
+    test -z "$cmd"; and return 1
+    contains -- $cmd $argv; and return 0
+end
+

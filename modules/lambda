@@ -35,9 +35,9 @@ _lambda_show-envs() { ### show environment variables for a list of functions
 
 # doesn't work, haven't tried to debug
 _lambda_show-env-all() { ### show environment variables for all functions (in the region) (broken)
-    __info "Getting lambda envs (nothing will show until we're done)"
+    __sc_info "Getting lambda envs (nothing will show until we're done)"
     for name in $(_lambda_list | jq '.[].name' | tr -d \"); do
-        __info "Getting env for $name" 1>&2
+        __sc_info "Getting env for $name" 1>&2
         _lambda_show-env $name
     done | jq -s
 }

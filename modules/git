@@ -6,8 +6,8 @@ _git_remove-from-history() { ### Fully remove a file from git history
         echo 'usage: remove-from-history path/to/file'
         exit 1
     fi
-    __warn "This is a destructive command which rewrite history from the root commit."
-    __warn "If you're sure this is what you want, run it yourself:"
+    __sc_warn "This is a destructive command which rewrite history from the root commit."
+    __sc_warn "If you're sure this is what you want, run it yourself:"
     echo
     cat <<EOF
 git filter-branch --force --index-filter \\
@@ -21,12 +21,12 @@ _git_fetch-repo-file() { ### Download a single file from a Github repository
         echo 'usage: fetch-repo-file filepath'
         exit 1
     fi
-    __info "This command relies on env GITHUB_API_TOKEN"
+    __sc_info "This command relies on env GITHUB_API_TOKEN"
     if [ -z "GITHUB_API_TOKEN" ]; then
-        __error "Set GITHUB_API_TOKEN"
+        __sc_error "Set GITHUB_API_TOKEN"
         exit 1
     fi
-    __error "go search for the curl, it's in a gist somewhere"
+    __sc_error "go search for the curl, it's in a gist somewhere"
 }
 
 _git_count-commits() { ### git rev-list --count --all

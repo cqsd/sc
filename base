@@ -13,14 +13,14 @@
 
 set -eo pipefail
 
-__success() { echo -e "\033[32m[+] $@\033[0m"; }  # [+] green
-__info()    { echo -e "\033[34m[+] $@\033[0m"; }  # [+] blue
-__warn()    { echo -e "\033[33m[-] $@\033[0m"; }  # [-] yellow
-__error()   { echo -e "\033[31m[!] $@\033[0m"; }  # [!] red
+__sc_success() { echo -e "\033[32m[+] $@\033[0m"; }  # [+] green
+__sc_info()    { echo -e "\033[34m[+] $@\033[0m"; }  # [+] blue
+__sc_warn()    { echo -e "\033[33m[-] $@\033[0m"; }  # [-] yellow
+__sc_error()   { echo -e "\033[31m[!] $@\033[0m"; }  # [!] red
 
-__remove_json_artifacts() { tr -d '[]",'; }
+__sc_remove_json_artifacts() { tr -d '[]",'; }
 
-__requires() {
+__sc_requires() {
     for cmd in "$@"; do
         if ! command -v $cmd &>/dev/null; then
             echo "this command requires $cmd. please install $cmd"
@@ -29,7 +29,7 @@ __requires() {
     done
 }
 
-__requires_one_of() {
+__sc_requires_one_of() {
     for cmd in "$@"; do
         command -v $cmd &>/dev/null && echo $cmd && return
     done
@@ -37,18 +37,18 @@ __requires_one_of() {
     exit 1
 }
 
-__BASEDIR=$(dirname "$(readlink "$0")")
-__CONFIG_DIR=$__BASEDIR/config
-__BIN_DIR=$__BASEDIR/bin
-__DATA_DIR=$__BASEDIR/data
+__sc_BASEDIR=$(dirname "$(readlink "$0")")
+__sc_CONFIG_DIR=$__sc_BASEDIR/config
+__sc_BIN_DIR=$__sc_BASEDIR/bin
+__sc_DATA_DIR=$__sc_BASEDIR/data
 
-__EDITOR=${EDITOR:-vi}
+__sc_EDITOR=${EDITOR:-vi}
 
 # skip anything that has a _ at the start of its filename (these are "ignored")
-MODULES=($(echo ${__BASEDIR}/modules/* | xargs -n1 basename | grep -v '^_'))
+__sc_MODULES=($(echo ${__sc_BASEDIR}/modules/* | xargs -n1 basename | grep -v '^_'))
 
 # return the length of the longest arg
-max_length() {
+__sc_max_length() {
     MAX_LENGTH=-1
     for s in $@; do
         # ${#var} => str length of ${var}
@@ -59,7 +59,7 @@ max_length() {
     echo $((MAX_LENGTH))  # dont think the math mode is necessary idc
 }
 
-print_helptext() {
+__sc_print_helptext() {
     left_pad_length=$1
     name=$2
     helptext=$3
@@ -67,23 +67,23 @@ print_helptext() {
 }
 
 # grep for top level docstring in a module
-module_docstring() {
+__sc_module_docstring() {
     module=$1
     {
-        grep -o '^### .*$' $__BASEDIR/modules/$module \
+        grep -o '^### .*$' $__sc_BASEDIR/modules/$module \
             | sed -e 's/^###//g' \
                   -e 's/^ *//g'
     } || true
 }
 
 # grep for "public" function definitions in a module (includes docstrings)
-function_definitions() {
+__sc_function_definitions() {
     module=$1
-    grep -hior -e "^_${module}_.*().*$" ${__BASEDIR}/modules/$module
+    grep -hior -e "^_${module}_.*().*$" ${__sc_BASEDIR}/modules/$module
 }
 
-function_name_from_definition() {
-    grep -v '^__' \
+__sc_function_name_from_definition() {
+    grep -v '^__sc_' \
         | sed -e 's/_/ /g' \
               -e 's/ *{.*//g' \
               -e 's/^ *//g' \
@@ -91,12 +91,12 @@ function_name_from_definition() {
         | cut -d' ' -f2-
 }
 
-function_names() {
-    function_definitions $1 | function_name_from_definition
+__sc_function_names() {
+    __sc_function_definitions $1 | __sc_function_name_from_definition
 }
 
 # ngl this is pretty fuckin bad
-function_docstring_from_definition() {
+__sc_function_docstring_from_definition() {
     {
         grep -o '### .*$' \
             | sed -e 's/^###//g' \
@@ -107,66 +107,64 @@ function_docstring_from_definition() {
 # print function docstrings in a module. this relies on you (me) always
 # defining functions a certain way. there's already a lot of that in this
 # project, so I'll tolerate it, but it's obviously not great...
-module_function_usage() {
+__sc_module_function_usage() {
     module=$1
     echo "usage: $module [command]"
     echo
     echo "available commands are:"
     # doing the same grep a bunch of times to keep things simple
-    left_pad_length=$(max_length $(function_names $module))
+    left_pad_length=$(__sc_max_length $(__sc_function_names $module))
     IFS=$'\n'
-    for definition in $(function_definitions $module); do
-        name=$(echo $definition | function_name_from_definition)
-        docstring=$(echo $definition | function_docstring_from_definition)
-        print_helptext $left_pad_length "$name" "$docstring"
+    for definition in $(__sc_function_definitions $module); do
+        name=$(echo $definition | __sc_function_name_from_definition)
+        docstring=$(echo $definition | __sc_function_docstring_from_definition)
+        __sc_print_helptext $left_pad_length "$name" "$docstring"
     done
     unset IFS
 }
 
-usage() {
+__sc_usage() {
     echo "usage: $(basename $0) <module> [command]"
     echo
     echo "available modules are:"
-    left_pad_length=$(max_length ${MODULES[@]})
-    for module in ${MODULES[@]}; do
-        print_helptext $left_pad_length $module "$(module_docstring $module)"
+    left_pad_length=$(__sc_max_length ${__sc_MODULES[@]})
+    for module in ${__sc_MODULES[@]}; do
+        __sc_print_helptext $left_pad_length $module "$(__sc_module_docstring $module)"
     done
     echo
-    echo "search for commands: sc meta search [term]"
+    echo 'search for commands: meta search <term>'
 }
 
-__handle_cmd() {
-    # "public" "module" functions are prefixed with a _. TODO: only source the
-    # module that's needed rather than sourcing all of them every time
+__sc_handle_cmd() {
     module=$1; shift || true  # shift errors if no args left
     case $module in
         ''|h|-h|help|--help)
-            usage
+            __sc_usage
             ;;
         *)
             # "load" the "module" if it exists
-            module_path=$__BASEDIR/modules/$module
+            module_path=$__sc_BASEDIR/modules/$module
             if [ -f $module_path ]; then
                 # print module usage if there's no command
                 if [ $# -eq 0 ]; then
-                    module_function_usage $module
+                    __sc_module_function_usage $module
                     exit
                 fi
                 source $module_path
                 cmd=$1; shift
                 full_cmd=_${module}_$cmd
                 if ! [ "$(type -t $full_cmd)" = function ]; then
-                    __error $module $cmd not found
+                    __sc_error $module $cmd not found
                     exit 1
                 else
                     ${full_cmd} "$@"
                 fi
             else
-                __error $module not found
+                __sc_error $module not found
                 exit 1
             fi
             ;;
     esac
 }
 
-__handle_cmd "$@"
+__sc_handle_cmd "$@"

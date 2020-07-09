@@ -2,13 +2,13 @@
 ### "security" shortcuts
 
 SHARK_BASE_DIR=~/src/security/shark
-__DORK_DIR=${__BASEDIR}/data/sec/dork
-__DORK_FILE=${__DORK_DIR}/main
+__sc_DORK_DIR=${__sc_BASEDIR}/data/sec/dork
+__sc_DORK_FILE=${__sc_DORK_DIR}/main
 
 _sec_trufflehog() { ### run trufflehog (you can pass args)
     if ! [ -f ~/.venvs/utils/bin/trufflehog ]; then
-        __warn "Couldn't find ~/.venvs/utils/bin/trufflehog"
-        __warn "Either set that up, or set SC_TRUFFLEHOG_PATH"
+        __sc_warn "Couldn't find ~/.venvs/utils/bin/trufflehog"
+        __sc_warn "Either set that up, or set SC_TRUFFLEHOG_PATH"
         exit 1
     fi
     TRUFFLEHOG=${SC_TRUFFLEHOG_PATH:-~/.venvs/utils/bin/trufflehog}
@@ -67,7 +67,7 @@ _sec_test-aws-key() { ### grep common todo strings in pwd
     read -sp "Secret (will be hidden): " _key_secret
     echo
 
-    __info calling aws sts-get-caller-identity with $_key_id
+    __sc_info calling aws sts-get-caller-identity with $_key_id
     env -i \
         PATH=$(dirname $(which aws))
         AWS_ACCESS_KEY_ID=${_key_id} \
@@ -102,8 +102,8 @@ _sec_payload() { ### cat a payload (no args to list available)
 }
 
 _sec_check-fish-read() { ### check if fish has saved any secrets typed into read -s
-    __info "This is hardcoded for the default path" >&2
-    __info "You should make it check for alternate configuration" >&2
+    __sc_info "This is hardcoded for the default path" >&2
+    __sc_info "You should make it check for alternate configuration" >&2
     cat ~/.local/share/fish/fish_read_history
 }
 
@@ -117,7 +117,7 @@ _sec_shark() { ### run some shit against a target
     outfile_base=$outdir/$target
     echo $@
 
-    __info will output under $outdir, enter to continue
+    __sc_info will output under $outdir, enter to continue
     read
 
     mkdir -p $outdir
@@ -161,7 +161,7 @@ _sec_scrape() { ### start local bookmark scraper listener
         start|run)
             port=${1:-9753}
             echo starting scraper on port $port
-            ${__BASEDIR}/bin/scrape-listener -p $port run
+            ${__sc_BASEDIR}/bin/scrape-listener -p $port run
             ;;
         get)
             kind=${1:_}
@@ -197,14 +197,14 @@ _sec_dork() { ### osint dorks, idk atm
     cmd=$1; shift
     case $cmd in
         edit)
-            $__EDITOR $__DORK_FILE
+            $__sc_EDITOR $__sc_DORK_FILE
             ;;
         list)
             if [ $# -eq 1 ]; then
                 _type=$1
-                grep -hie "^$_type" $__DORK_FILE | cut -d\| -f2-
+                grep -hie "^$_type" $__sc_DORK_FILE | cut -d\| -f2-
             else
-                cut -d'|' -f1 $__DORK_FILE | sort | uniq
+                cut -d'|' -f1 $__sc_DORK_FILE | sort | uniq
             fi
             ;;
         template)
@@ -212,11 +212,11 @@ _sec_dork() { ### osint dorks, idk atm
             # replace {{target}} with the target
             if [ $# -eq 1 ]; then
                 target=$1
-                cut -d\| -f2- $__DORK_FILE | _template $target
+                cut -d\| -f2- $__sc_DORK_FILE | _template $target
             else
                 _type=$1
                 target=$2
-                grep -ih $_type $__DORK_FILE \
+                grep -ih $_type $__sc_DORK_FILE \
                     | cut -d\| -f2- \
                     | _template $target
             fi

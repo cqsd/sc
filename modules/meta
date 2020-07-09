@@ -1,55 +1,55 @@
 #!/bin/bash
 ### setup, search, edit, etc.
 
-__SETUP_DIR=$__BASEDIR/setup
+__sc_SETUP_DIR=$__sc_BASEDIR/setup
 
 _meta_search() { ### search for a command
-    __search_usage() {
+    __sc_search_usage() {
         echo usage: search TERM
         exit 1
     }
     if [ $# -lt 1 ]; then
-        __search_usage
+        __sc_search_usage
     fi
     term=$1; shift
     echo matching commands:
     # -h hides file name
     # search all non-private function definitions in modules for matching command
-    # name. note the second grep: __ (dunder) functions are for internal use
-    grep -hior -e "^_.*${term}.*()" ${__BASEDIR}/modules \
-        | grep -ve short_help -e __ \
+    # name. note the second grep: __sc_ (dunder) functions are for internal use
+    grep -hior -e "^_.*${term}.*()" ${__sc_BASEDIR}/modules \
+        | grep -ve short_help -e __sc_ \
         | sed -e 's/_/ /g' \
               -e 's/^ /  /g' \
               -e 's/()//g' # clean up the output a bit; this might be a bug
 }
 
 _meta_setup() { ### install/build deps (mostly unimplemented)
-    __setup_usage() {
+    __sc_setup_usage() {
         echo usage: setup ITEM
         echo
         echo available items
         echo "  all - setup everything below"
-        ls $__setup_usage | sed "s/^/  /g"
+        ls $__sc_setup_usage | sed "s/^/  /g"
         exit 1
     }
     if [ $# -lt 1 ]; then
-        __setup_usage
+        __sc_setup_usage
     fi
     name=$1; shift
     case $name in
         all)
-            for d in $__SETUP_DIR; do
-                __info setting up $d
+            for d in $__sc_SETUP_DIR; do
+                __sc_info setting up $d
                 $d/setup
             done
             ;;
         *)
-            if ! [ -f $__SETUP_DIR/$name/setup ]; then
-                __error $name is not recognized as a setup item
-                __setup_usage
+            if ! [ -f $__sc_SETUP_DIR/$name/setup ]; then
+                __sc_error $name is not recognized as a setup item
+                __sc_setup_usage
             fi
-            __info setting up $name
-            $__SETUP_DIR/$name/setup
+            __sc_info setting up $name
+            $__sc_SETUP_DIR/$name/setup
             ;;
     esac
 }
@@ -59,18 +59,18 @@ _meta_edit() { ### edit source for a module
         echo usage: edit MODULE
         echo
         echo available modules:
-        echo $__BASEDIR/modules/* | xargs basename | sed 's/^/  /g'
+        echo $__sc_BASEDIR/modules/* | xargs basename | sed 's/^/  /g'
         exit 1
     fi
 
     if [ $1 = 'base' ]; then
-        $__EDITOR $__BASEDIR/base
+        $__sc_EDITOR $__sc_BASEDIR/base
     else
-        module=$__BASEDIR/modules/$1
+        module=$__sc_BASEDIR/modules/$1
         if ! [ -f $module ]; then
             echo no module "$module"
         else
-            $__EDITOR $module
+            $__sc_EDITOR $module
         fi
     fi
 }
@@ -96,20 +96,50 @@ _meta_create-module() { ### create a new module
     fi
 
     name=$1
-    if [ -f $__BASEDIR/modules/$name ]; then
+    if [ -f $__sc_BASEDIR/modules/$name ]; then
         echo a module named $1 already exists
         exit 1
     fi
 
-    template=$__BASEDIR/data/meta/module-template
-    module=$__BASEDIR/modules/$name
+    template=$__sc_BASEDIR/data/meta/module-template
+    module=$__sc_BASEDIR/modules/$name
     cat $template | sed "s/{{name}}/${name}/g" > $module
     _meta_edit $name
 }
 
 _meta_test-loggers() {
-    __success ${1:-"test success ||||||||||||||||"}
-    __info    ${1:-"test info    ||||||||||||||||"}
-    __warn    ${1:-"test warn    ||||||||||||||||"}
-    __error   ${1:-"test error   ||||||||||||||||"}
+    __sc_success ${1:-"test success ||||||||||||||||"}
+    __sc_info    ${1:-"test info    ||||||||||||||||"}
+    __sc_warn    ${1:-"test warn    ||||||||||||||||"}
+    __sc_error   ${1:-"test error   ||||||||||||||||"}
+}
+
+__sc_to_module_fish_completion() {
+    module=$1
+    description=$2
+    echo "complete -f -c sc -n '__fish_sc_needs_command' -a $module -d '$description'"
+}
+
+__sc_to_module_commands_fish_completion() {
+    module=$1
+    IFS=$'\n'
+    for definition in $(__sc_function_definitions $module); do
+        name=$(echo $definition | __sc_function_name_from_definition)
+        docstring=$(echo $definition | __sc_function_docstring_from_definition)
+        docstring_quoted=$(printf "%q\n" "$docstring")
+        echo "complete -f -c sc -n '__fish_sc_using_command $module' -a $name -d $docstring_quoted"
+    done
+    unset IFS
+}
+
+_meta_generate-fish-completions() { ### generate fish completions file
+    # get all function names and docstrings
+    # print a completion line with the function name as the "option"
+    # and the docstring as the "description"
+    cat $__sc_DATA_DIR/meta/fish-completions-header
+    for module in ${__sc_MODULES[@]}; do
+        __sc_to_module_fish_completion $module "$(__sc_module_docstring $module)"
+        __sc_to_module_commands_fish_completion $module
+        echo
+    done
 }

@@ -1,7 +1,7 @@
 #!/bin/bash
 ### sparse aws shortcuts (deprecated)
 
-_aws_list-profiles() { ### list aws profiles
+_aws_list-profiles() { ### list aws profiles'
     if [ -f ~/.aws/config ]; then
         grep '\[.*\]' ~/.aws/config | sed -e 's/\[profile//g' -e 's/\]//g' | tr -d ' '
     else
@@ -20,7 +20,7 @@ _aws_list-ssm-params() { ### list ssm parameters
         --query "Parameters" \
         $* \
         | jq '.[].Name' \
-        | __remove_json_artifacts
+        | __sc_remove_json_artifacts
 }
 
 # for any zone
@@ -34,5 +34,5 @@ _aws_get-ssm-param() { ### get and decrypt an ssm parameter
         --name "$name" \
         --with-decryption \
         | jq .Parameter.Value \
-        | __remove_json_artifacts
+        | __sc_remove_json_artifacts
 }

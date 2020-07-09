@@ -7,7 +7,7 @@ _scratch_qemu() {
         exit 1
     fi
     image_path=$1
-    __info "Why? fuck if I know"
+    __sc_info "Why? fuck if I know"
     qemu-system-x86_64 \
         -m 1024 \
         -boot d \

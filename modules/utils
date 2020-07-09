@@ -18,7 +18,7 @@ _utils_calc() { ### do simple calculations with bc (calc '1/2*5.1')
         echo 'example usage: calc "1/2*5"'
         exit 1
     fi
-    __warn fyi this is only outputting 6 decimals
+    __sc_warn fyi this is only outputting 6 decimals
     echo "scale=6; $1" | bc -liq
 }
 
@@ -28,28 +28,28 @@ _utils_print-unicode() { ### print a unicode character by codepoint
         exit 1
     fi
     _codepoint=$1
-    __info depending on the codepoint, you may not see any output >&2
+    __sc_info depending on the codepoint, you may not see any output >&2
     python3 -c 'print("\u'${_codepoint}'", end=None)'
 }
 
 _utils_start-elasticsearch() {
-    __info 'This is definitely one of the less necessary things in here'
-    docker-compose -f ${__BASEDIR}/config/docker-compose-es.yml up
+    __sc_info 'This is definitely one of the less necessary things in here'
+    docker-compose -f ${__sc_BASEDIR}/config/docker-compose-es.yml up
 }
 
 _utils_stop-elasticsearch() {
-    __info 'This is definitely one of the less necessary things in here'
-    docker-compose -f ${__BASEDIR}/config/docker-compose-es.yml down
+    __sc_info 'This is definitely one of the less necessary things in here'
+    docker-compose -f ${__sc_BASEDIR}/config/docker-compose-es.yml down
 }
 
 _utils_graphiql() { ### run browsable graphiql
-    __graphiql_usage() {
+    __sc_graphiql_usage() {
         echo 'usage: graphiql [start|stop] [options..]'
         exit 1
     }
 
     if [ $# -lt 1 ]; then
-        __graphiql_usage
+        __sc_graphiql_usage
     fi
 
     cmd=$1; shift
@@ -65,7 +65,7 @@ _utils_graphiql() { ### run browsable graphiql
             docker kill ${container_name}
             ;;
         *)
-            __graphiql_usage
+            __sc_graphiql_usage
             ;;
     esac
 }
@@ -75,7 +75,7 @@ _utils_date-iso() { ### ISO-8601 date (not all date bins have -I)
 }
 
 _utils_verify-gpg() { ### verify PGP signature for a file (lol..)
-    gpg_cmd=$(__requires_one_of gpg gpg2)
+    gpg_cmd=$(__sc_requires_one_of gpg gpg2)
     if ! [ $# -eq 2 ]; then
         echo 'usage: verify-gpg SIGNATURE_FILE KEY_FINGERPRINT'
         exit 1
