@@ -1,23 +1,23 @@
-## hacky bash stuff
-```
-uid=501|~/b/s/shortcuts ^master $ sc
-usage: sc <category> [command]
+bash "modules" for organizing your shitty bash scripts
 
-available categories are:
-  aws     - whatever
-  ec2     - EC2 shortcuts
-  ecr     - ECR shortcuts
-  git     - Git conveniences
-  github  - github shortcuts
-  graphql - graphql thangs
-  lambda  - Lambda shortcuts
-  meta    - setup stuff I guess
+```
+$ ./base
+usage: base <module> [command]
+
+available modules are:
+  aws     - no help found
+  ec2     - no help found
+  ecr     - no help found
+  git     - no help found
+  github  - no help found
+  graphql - no help found
+  http    - small ad-hoc http servers
+  meta    - setup, search, edit, etc.
   misc    - Uncategorized
   net     - Network shortcuts
-  scratch - stuff that might not be useful at all
-  sec     - Security tool shortcuts
-  slack   - Slack conveniences
-  utils   - idk
+  slack   - slack shortcuts
+  twitter - some shitty twitter re
+  utils   - this should merge with misc tbh
 
 search for commands: sc meta search [term]
 ```

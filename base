@@ -44,22 +44,8 @@ __DATA_DIR=$__BASEDIR/data
 
 __EDITOR=${EDITOR:-vi}
 
-MODULES=()
-for file in ${__BASEDIR}/modules/*; do
-    MODULE=$(basename $file)
-    case $MODULE in
-        _*)
-            # skip anything that has a _ at the start of its filename (these
-            # are "ignored")
-            continue
-            ;;
-        *)
-            # "load" the module. TODO do this on demand; we don't need to load
-            # every single one
-            source $file
-            MODULES+=($MODULE)
-    esac
-done
+# skip anything that has a _ at the start of its filename (these are "ignored")
+MODULES=($(echo ${__BASEDIR}/modules/* | xargs -n1 basename | grep -v '^_'))
 
 # return the length of the longest arg
 max_length() {
@@ -123,9 +109,10 @@ function_docstring_from_definition() {
 # project, so I'll tolerate it, but it's obviously not great...
 module_function_usage() {
     module=$1
-    # doing the same grep a bunch of times is simpler to write than building
-    # and managing arrays in bash (cuz i don't know how to use a bash hash and
-    # i don't care rn)
+    echo "usage: $module [command]"
+    echo
+    echo "available commands are:"
+    # doing the same grep a bunch of times to keep things simple
     left_pad_length=$(max_length $(function_names $module))
     IFS=$'\n'
     for definition in $(function_definitions $module); do
@@ -137,9 +124,9 @@ module_function_usage() {
 }
 
 usage() {
-    echo "usage: $(basename $0) <category> [command]"
+    echo "usage: $(basename $0) <module> [command]"
     echo
-    echo "available categories are:"
+    echo "available modules are:"
     left_pad_length=$(max_length ${MODULES[@]})
     for module in ${MODULES[@]}; do
         print_helptext $left_pad_length $module "$(module_docstring $module)"
@@ -151,33 +138,32 @@ usage() {
 __handle_cmd() {
     # "public" "module" functions are prefixed with a _. TODO: only source the
     # module that's needed rather than sourcing all of them every time
-    cmd=$1
-    case $cmd in
+    module=$1; shift || true  # shift errors if no args left
+    case $module in
         ''|h|-h|help|--help)
             usage
             ;;
         *)
-            shift
-            if [ $# -eq 0 ]; then
-                module_function_usage $cmd
-            elif ! [ -z $1 ]; then
-                subcmd=$1
-                shift
-                full_cmd=_${cmd}_$subcmd
+            # "load" the "module" if it exists
+            module_path=$__BASEDIR/modules/$module
+            if [ -f $module_path ]; then
+                # print module usage if there's no command
+                if [ $# -eq 0 ]; then
+                    module_function_usage $module
+                    exit
+                fi
+                source $module_path
+                cmd=$1; shift
+                full_cmd=_${module}_$cmd
                 if ! [ "$(type -t $full_cmd)" = function ]; then
-                    __error $cmd $subcmd not found
+                    __error $module $cmd not found
                     exit 1
                 else
                     ${full_cmd} "$@"
                 fi
             else
-                if ! [ "$(type -t _${cmd})" = function ]; then
-                    __error $cmd not found
-                    exit 1
-                else
-                    # hack: replace _subcmd with just subcmd (only once)
-                    _${cmd} | sed 's/ _/ /'
-                fi
+                __error $module not found
+                exit 1
             fi
             ;;
     esac
