@@ -70,7 +70,7 @@ $ sc meta update-fish-completions
 [+] done
 ```
 
-Now modules and commands can be tab-completed
+Reload the shell. Modules and commands can now be tab-completed:
 ```
 $ sc[TAB]
 meta  (setup, search, edit, etc.)  net  (network shortcuts)

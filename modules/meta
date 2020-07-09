@@ -117,7 +117,7 @@ _meta_test-loggers() {
 __sc_to_module_fish_completion() {
     module=$1
     description=$2
-    echo "complete -f -c sc -n '__fish_sc_needs_command' -a $module -d '$description'"
+    echo "complete -f -c sc -n '__fish_sc_needs_command' -a $module -d $description"
 }
 
 __sc_to_module_commands_fish_completion() {
@@ -138,7 +138,9 @@ _meta_generate-fish-completions() { ### generate fish completions file
     # and the docstring as the "description"
     cat $__sc_DATA_DIR/meta/fish-completions-header
     for module in ${__sc_MODULES[@]}; do
-        __sc_to_module_fish_completion $module "$(__sc_module_docstring $module)"
+        docstring=$(__sc_module_docstring $module)
+        docstring_quoted=$(printf "%q\n" "$docstring")
+        __sc_to_module_fish_completion $module "$docstring_quoted"
         __sc_to_module_commands_fish_completion $module
         echo
     done
