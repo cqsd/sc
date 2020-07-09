@@ -1,2 +1,0 @@
-github|site:github.com intext:"@{{target}}" -intitle:Repositories -intitle:Following -intitle:Starred -intitle:Followers
-twitter|site:twitter.com -inurl:status -inurl:statuses -inurl:{{target}} "@{{target}}"
