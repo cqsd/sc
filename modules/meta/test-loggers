@@ -1,0 +1,5 @@
+### test logging functions
+__sc_success ${1:-"test success ||||||||||||||||"}
+__sc_info    ${1:-"test info    ||||||||||||||||"}
+__sc_warn    ${1:-"test warn    ||||||||||||||||"}
+__sc_error   ${1:-"test error   ||||||||||||||||"}

@@ -1,0 +1,24 @@
+#!/bin/bash
+### edit source for a command
+if [ $# -lt 1 ]; then
+    echo usage: edit MODULE [COMMAND]
+    echo
+    echo available modules:
+    echo $__sc_MODULES | xargs -n1 echo | sed 's/^/  /g'
+    exit 1
+fi
+
+module=$1
+command_name=$2
+if [ $module = base ]; then
+    $__sc_EDITOR $__sc_BASEDIR/base
+else
+    module_path=$__sc_BASEDIR/modules/$1
+    if [ -f "$module_path/$command_name" ]; then
+        $__sc_EDITOR "$module_path/$command_name"
+    elif [ -d "$module_path" ] || [ -f "$module_path" ]; then
+        $__sc_EDITOR "$module_path"
+    else
+        echo no module "$module"
+    fi
+fi

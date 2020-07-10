@@ -6,32 +6,11 @@ __sc_info()    { echo -e "\033[34m[+] $@\033[0m"; }  # [+] blue
 __sc_warn()    { echo -e "\033[33m[-] $@\033[0m"; }  # [-] yellow
 __sc_error()   { echo -e "\033[31m[!] $@\033[0m"; }  # [!] red
 
-__sc_remove_json_artifacts() { tr -d '[]",'; }
-
-__sc_requires() {
-    for cmd in "$@"; do
-        if ! command -v $cmd &>/dev/null; then
-            echo "this command requires $cmd. please install $cmd"
-            exit 1
-        fi
-    done
-}
-
-__sc_requires_one_of() {
-    for cmd in "$@"; do
-        command -v $cmd &>/dev/null && echo $cmd && return
-    done
-    echo "this command requires one of $@" >&2
-    exit 1
-}
-
 __sc_BASEDIR=$(dirname "$(readlink "$0")")
 __sc_CONFIG_DIR=$__sc_BASEDIR/config
 __sc_BIN_DIR=$__sc_BASEDIR/bin
 __sc_DATA_DIR=$__sc_BASEDIR/data
-
 __sc_EDITOR=${EDITOR:-vi}
-
 # skip anything that has a _ at the start of its filename (these are "ignored")
 __sc_MODULES=($(echo ${__sc_BASEDIR}/modules/* | xargs -n1 basename | grep -v '^_'))
 
@@ -57,39 +36,24 @@ __sc_print_helptext() {
 # grep for top level docstring in a module
 __sc_module_docstring() {
     module=$1
-    {
-        grep -o '^### .*$' $__sc_BASEDIR/modules/$module \
-            | sed -e 's/^###//g' \
-                  -e 's/^ *//g'
-    } || true
+    description_file="$__sc_BASEDIR/modules/$module/_description" 
+    test -f "$description_file" && cat "$description_file"
 }
 
-# grep for "public" function definitions in a module (includes docstrings)
-__sc_function_definitions() {
+__sc_command_names() {
     module=$1
-    grep -hior -e "^_${module}_.*().*$" ${__sc_BASEDIR}/modules/$module
-}
-
-__sc_function_name_from_definition() {
-    grep -v '^__sc_' \
-        | sed -e 's/_/ /g' \
-              -e 's/ *{.*//g' \
-              -e 's/^ *//g' \
-              -e 's/()//g' \
-        | cut -d' ' -f2-
-}
-
-__sc_function_names() {
-    __sc_function_definitions $1 | __sc_function_name_from_definition
+    ls -1 "${__sc_BASEDIR}/modules/$module" | grep -v '^_'
 }
 
 # ngl this is pretty fuckin bad
-__sc_function_docstring_from_definition() {
+__sc_command_docstring() {
+    module=$1
+    command_name=$2
     {
-        grep -o '### .*$' \
-            | sed -e 's/^###//g' \
-                  -e 's/^ *//g'
-    } || true # for when grep finds nothing
+        grep '^###' "${__sc_BASEDIR}/modules/$module/$command_name" \
+            | sed 's/^### *//g' \
+            | xargs
+    } || true
 }
 
 # print function docstrings in a module. this relies on you (me) always
@@ -100,13 +64,12 @@ __sc_module_function_usage() {
     echo "usage: $module [command]"
     echo
     echo "available commands are:"
-    # doing the same grep a bunch of times to keep things simple
-    left_pad_length=$(__sc_max_length $(__sc_function_names $module))
+    command_names=($(__sc_command_names $module))
+    left_pad_length=$(__sc_max_length ${command_names[@]})
     IFS=$'\n'
-    for definition in $(__sc_function_definitions $module); do
-        name=$(echo $definition | __sc_function_name_from_definition)
-        docstring=$(echo $definition | __sc_function_docstring_from_definition)
-        __sc_print_helptext $left_pad_length "$name" "$docstring"
+    for command_name in ${command_names[@]}; do
+        docstring=$(__sc_command_docstring $module $command_name)
+        __sc_print_helptext $left_pad_length "$command_name" "$docstring"
     done
     unset IFS
 }
@@ -130,22 +93,20 @@ __sc_handle_cmd() {
             __sc_usage
             ;;
         *)
-            # "load" the "module" if it exists
-            module_path=$__sc_BASEDIR/modules/$module
-            if [ -f $module_path ]; then
+            module_path="$__sc_BASEDIR/modules/$module" 
+            if [ -d "$module_path" ]; then
                 # print module usage if there's no command
                 if [ $# -eq 0 ]; then
                     __sc_module_function_usage $module
                     exit
                 fi
-                source $module_path
                 cmd=$1; shift
-                full_cmd=_${module}_$cmd
-                if ! [ "$(type -t $full_cmd)" = function ]; then
+                script="$module_path/$cmd"
+                if [ -f "$script" ]; then
+                    source "$script" "$@"
+                else
                     __sc_error $module $cmd not found
                     exit 1
-                else
-                    ${full_cmd} "$@"
                 fi
             else
                 __sc_error $module not found

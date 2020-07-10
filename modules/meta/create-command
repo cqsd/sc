@@ -1,0 +1,25 @@
+#!/bin/bash
+### create a new command
+if [ $# -ne 2 ]; then
+    echo usage: $(basename $0) MODULE_NAME COMMAND_NAME
+    exit 1
+fi
+
+module=$1
+command_name=$2
+module_path="$__sc_BASEDIR/modules/$module"
+
+if ! [ -d "$module_path" ]; then
+    __sc_info creating new module $module
+    mkdir -p "$module_path"
+    touch "$module_path/_description"
+    __sc_info edit $module_path/_description to add a module description
+fi
+
+if [ -f "$module_path/$command_name" ]; then
+    __sc_error $module $command_name already exists
+else
+    echo '#!/bin/bash' >> "$module_path/$command_name"
+fi
+
+_meta_edit  "$module_path/$command_name"

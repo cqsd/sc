@@ -1,0 +1,6 @@
+#!/bin/bash
+### update fish completions file
+mkdir -p ~/.config/fish/completions
+__sc_info writing new completions to ~/.config/fish/completions/sc.fish
+__sc_handle_cmd meta generate-fish-completions > ~/.config/fish/completions/sc.fish
+__sc_info "done"

@@ -1,0 +1,11 @@
+#!/bin/bash
+### show source for a command
+if [ $# -ne 2 ]; then
+    echo usage: show module subcommand
+    exit 1
+fi
+
+module=$1
+command_name=$2
+script="$__sc_BASEDIR/modules/$module/$command_name"
+test -f "$script" && cat "$script" || echo $module $command_name not found
