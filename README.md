@@ -22,56 +22,57 @@ available commands are:
 ```
 
 ## installation
-cba with convention ngl. Just alias `sc` to `./base`.
+cba with convention. just alias `sc` to `./base`.
 
 ## writing new modules
-New modules can be created using the `meta create-module [name]` command. For
-example, `sc meta create-module example` will create `./modules/example` with
-these contents:
+to create an `example` module, run `meta create-module example`. this creates
+a `./modules/example` file
 
 ```bash
 #!/bin/bash
 
 ### module description
 
-_example_subcommand() {  ### subcommand description
+_example_command() {  ### command description
     __sc_requires_one_of nc ncat
     if [ $# -lt 1 ]; then
-        echo 'usage: subcommand args'
+        echo 'usage: command args'
         exit 1
     fi
     __sc_success hello "$@"
 }
 ```
 
-yielding a new module:
+this exposes an `example` module with a `command` command
 ```
+$ sc
+usage: sc <module> [command]
+
+available modules are:
+  example - module description
+  meta    - setup, search, edit, etc.
+
 $ sc example
 usage: example [command]
 
 available commands are:
-  subcommand - subcommand description
+  command - command description
 ```
-
-See `./modules/` for examples. See `./base` if you're curious how subcommands
-are "exported". Spoiler: it's a brittle hack.
-
-FYI: I believe that commands typed into a shell shouldn't contain underscores,
-so naming a command with underscores will break autocomplete.
 
 ## autocomplete
 `fish` completions can be generated with `sc meta generate-fish-completions`.
-To install them:
+cuz u potentially need to regenerate them fairly often, there's a convenience
+script to update them in the default location:
 ```
 $ sc meta update-fish-completions
 [+] writing new completions to /Users/example/.config/fish/completions/sc.fish
 [+] done
 ```
 
-Reload the shell. Modules and commands can now be tab-completed:
+they'll be available after you reload the shell:
 ```
 $ sc[TAB]
-meta  (setup, search, edit, etc.)  net  (network shortcuts)
+meta  (setup, search, edit, etc.)  example  (module description)
 
 $ sc meta[TAB]
 create-module                         (create a new module)
@@ -81,10 +82,11 @@ search                    (search for a command by keyword)
 …and 4 more rows
 ```
 
-NB: `fish` completions need to be regenerated whenever you add/edit modules.
-
-`bash` completions _exist_, but I don't use bash, so they might break.
+`fish` completions need to be regenerated whenever you add/edit modules.
 
 ## todo
 `zsh` completions are planned. otherwise just read `./base`. it's obvious that
 _something_ needs to be done.
+
+### why did you do this with this brittle \_modulename\_commandname stuff instead of using dir structure to define modules and one file for each command. that would have been cleaner, and you wouldn't have to do all this stupid parsing and grepping through bash that could easily break if someone just wrote their functions a little differently than you. overall it could have been simpler and more robust if you j
+shut up

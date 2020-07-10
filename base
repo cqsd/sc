@@ -1,16 +1,4 @@
 #!/bin/bash
-# bash hax
-#
-# Every file in ./modules/ gets sourced. Each file is a "module" That means
-# everything's gonna be in this one top level namespace That means submodules
-# can't easily import shit
-#
-# Every module should prefix all functions with an underscore, the module name,
-# and an underscore. So a hello command in the example module would be defined
-# as _example_hello()
-#
-# Open any module to see how helptext is defined.
-
 set -eo pipefail
 
 __sc_success() { echo -e "\033[32m[+] $@\033[0m"; }  # [+] green
@@ -56,7 +44,7 @@ __sc_max_length() {
             MAX_LENGTH=${#s}
         fi
     done
-    echo $((MAX_LENGTH))  # dont think the math mode is necessary idc
+    echo ${MAX_LENGTH}
 }
 
 __sc_print_helptext() {

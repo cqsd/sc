@@ -2,10 +2,10 @@
 
 ### module description
 
-_{{name}}_subcommand() {  ### subcommand description
+_{{name}}_command() {  ### command description
     __sc_requires_one_of nc ncat
     if [ $# -lt 1 ]; then
-        echo 'usage: subcommand args'
+        echo 'usage: command args'
         exit 1
     fi
     __sc_success hello "$@"
