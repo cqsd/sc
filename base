@@ -6,6 +6,34 @@ __sc_info()    { echo -e "\033[34m[+] $@\033[0m"; }  # [+] blue
 __sc_warn()    { echo -e "\033[33m[-] $@\033[0m"; }  # [-] yellow
 __sc_error()   { echo -e "\033[31m[!] $@\033[0m"; }  # [!] red
 
+__sc_requires() {
+    for cmd in "$@"; do
+        if ! command -v $cmd &>/dev/null; then
+            echo "this command requires $cmd. please install $cmd"
+            exit 1
+        fi
+    done
+}
+
+__sc_requires_one_of() {
+    for cmd in "$@"; do
+        command -v $cmd &>/dev/null && echo $cmd && return
+    done
+    echo "this command requires one of $@" >&2
+    exit 1
+}
+
+__sc_link_open() {
+    __sc_info opening $1
+    if [ "$(uname)" = "Darwin" ]; then
+        open "$1"
+    else
+        __sc_warn 'using python; this might cause a flash'
+        sleep 1
+        python -m webbrowser "$1"
+    fi
+}
+
 __sc_BASEDIR=$(dirname "$(readlink "$0")")
 __sc_CONFIG_DIR=$__sc_BASEDIR/config
 __sc_BIN_DIR=$__sc_BASEDIR/bin
@@ -36,7 +64,7 @@ __sc_print_helptext() {
 # grep for top level docstring in a module
 __sc_module_docstring() {
     module=$1
-    description_file="$__sc_BASEDIR/modules/$module/_description" 
+    description_file="$__sc_BASEDIR/modules/$module/_description"
     test -f "$description_file" && cat "$description_file"
 }
 
@@ -52,7 +80,7 @@ __sc_command_docstring() {
     {
         grep '^###' "${__sc_BASEDIR}/modules/$module/$command_name" \
             | sed 's/^### *//g' \
-            | xargs
+            | tr -d '\n'
     } || true
 }
 
@@ -93,7 +121,7 @@ __sc_handle_cmd() {
             __sc_usage
             ;;
         *)
-            module_path="$__sc_BASEDIR/modules/$module" 
+            module_path="$__sc_BASEDIR/modules/$module"
             if [ -d "$module_path" ]; then
                 # print module usage if there's no command
                 if [ $# -eq 0 ]; then

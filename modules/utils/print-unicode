@@ -1,0 +1,8 @@
+### print a unicode character by codepoint
+if ! [ $# -eq 1 ]; then
+    echo 'example usage: print-unicode 200B'
+    exit 1
+fi
+_codepoint=$1
+__sc_info depending on the codepoint, you may not see any output >&2
+python3 -c 'print("\u'${_codepoint}'", end=None)'

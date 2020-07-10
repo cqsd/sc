@@ -1,18 +1,10 @@
-### search for a command by keyword
-__sc_search_usage() {
+### search for a command by keyword (buggy, todo)
+if [ $# -lt 1 ]; then
     echo usage: search TERM
     exit 1
-}
-if [ $# -lt 1 ]; then
-    __sc_search_usage
 fi
-term=$1; shift
+term=$1
 echo matching commands:
-# -h hides file name
-# search all non-private function definitions in modules for matching command
-# name. note the second grep: __sc_ (dunder) functions are for internal use
-grep -hior -e "^_.*${term}.*()" ${__sc_BASEDIR}/modules \
-    | grep -ve short_help -e __sc_ \
-    | sed -e 's/_/ /g' \
-          -e 's/^ /  /g' \
-          -e 's/()//g' # clean up the output a bit; this might be a bug
+for match in ${__sc_BASEDIR}/modules/*/*${term}*; do
+    echo $match | rev | cut -d/ -f-2 | rev
+done

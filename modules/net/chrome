@@ -1,0 +1,10 @@
+test -f "$__sc_CONFIG_DIR/net" && source "$__sc_CONFIG_DIR/net"
+
+### start chrome with cli arguments
+if [ -z "${CHROME_EXECUTABLE_PATH}" ]; then
+    echo please set CHROME_EXECUTABLE_PATH in env or $__sc_BASEDIR/config/net
+    exit 1
+fi
+"${CHROME_EXECUTABLE_PATH}" \
+    --args \
+    $@

@@ -4,7 +4,7 @@ if [ $# -lt 1 ]; then
     echo usage: edit MODULE [COMMAND]
     echo
     echo available modules:
-    echo $__sc_MODULES | xargs -n1 echo | sed 's/^/  /g'
+    echo ${__sc_MODULES[@]} | xargs -n1 echo | sed 's/^/  /g'
     exit 1
 fi
 

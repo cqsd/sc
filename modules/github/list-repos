@@ -1,0 +1,12 @@
+### list all repo names for an org
+if [ $# -lt 1 ]; then
+    echo 'usage: list-repos kind name'
+    echo
+    echo '`kind` - one of "users" or "orgs"'
+    exit 1
+fi
+kind=$1
+name=$2
+
+curl -Ls "https://api.github.com/$kind/$name/repos?per_page=200" \
+    | jq -r '.[].name'

@@ -1,0 +1,2 @@
+### ISO-8601 date (not all date bins have -I)
+date +%Y-%m-%dT%H:%M:%S%z

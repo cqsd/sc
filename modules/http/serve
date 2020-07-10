@@ -1,0 +1,10 @@
+### serve a directory
+if [ $# -lt 1 ]; then
+    echo 'usage: serve [DIR [PORT]]'
+    exit 1
+fi
+dir=${1:-.}
+port=${2:-8000}
+__sc_info serving $dir on http://localhost:$port
+
+python3 -m http.server --directory $dir $port

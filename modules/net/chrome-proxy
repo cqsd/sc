@@ -1,0 +1,17 @@
+### start unsafe chrome with proxy
+if [ $# -ne 1 ]; then
+    echo usage: chrome-proxy PROXY_ADDR
+    echo example: chrome-proxy localhost:8080
+    exit 1
+fi
+
+data_dir=$(mktemp -d)
+trap "rm -fr $data_dir" SIGINT EXIT
+
+proxy_host=$1
+__sc_handle_cmd net chrome \
+    --proxy-server="${proxy_host}" \
+    --disable-web-security \
+    --user-data-dir="$data_dir" \
+    --disk-cache-size=0 \
+    --ignore-certificate-errors

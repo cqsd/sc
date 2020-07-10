@@ -1,0 +1,13 @@
+### Fully remove a file from git history
+if [ $# -lt 1 ]; then
+    echo 'usage: remove-from-history path/to/file'
+    exit 1
+fi
+__sc_warn "This is a destructive command which rewrite history from the root commit."
+__sc_warn "If you're sure this is what you want, run it yourself:"
+echo
+cat <<EOF
+git filter-branch --force --index-filter \\
+'git rm --cached --ignore-unmatch "$1"' \\
+--prune-empty --tag-name-filter cat -- --all
+EOF
