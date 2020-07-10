@@ -86,3 +86,5 @@ search                    (search for a command by keyword)
 `fish` completions need to be regenerated whenever you add/edit modules.
 
 `bash` completions _exist_, but I don't use bash, so they might break.
+
+`zsh` completions are planned.
