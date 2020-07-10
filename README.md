@@ -1,13 +1,11 @@
 > bash "modules" for organizing bash scripts
 
-The `meta` module and a few example utilities are included.
 ```
 $ sc
 usage: sc <module> [command]
 
 available modules are:
   meta - setup, search, edit, etc.
-  net  - network shortcuts
 
 $ sc meta
 usage: meta [command]
@@ -83,8 +81,10 @@ search                    (search for a command by keyword)
 …and 4 more rows
 ```
 
-`fish` completions need to be regenerated whenever you add/edit modules.
+NB: `fish` completions need to be regenerated whenever you add/edit modules.
 
 `bash` completions _exist_, but I don't use bash, so they might break.
 
-`zsh` completions are planned.
+## todo
+`zsh` completions are planned. otherwise just read `./base`. it's obvious that
+_something_ needs to be done.
