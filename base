@@ -6,6 +6,8 @@ __sc_info()    { echo -e "\033[34m[+] $@\033[0m"; }  # [+] blue
 __sc_warn()    { echo -e "\033[33m[-] $@\033[0m"; }  # [-] yellow
 __sc_error()   { echo -e "\033[31m[!] $@\033[0m"; }  # [!] red
 
+__sc_quote_string() { printf "%q\n" "$1"; }
+
 __sc_requires() {
     for cmd in "$@"; do
         if ! command -v $cmd &>/dev/null; then
@@ -35,12 +37,13 @@ __sc_link_open() {
 }
 
 __sc_BASEDIR=$(dirname "$(readlink "$0")")
+__sc_MODULES_DIR=$__sc_BASEDIR/modules
 __sc_CONFIG_DIR=$__sc_BASEDIR/config
 __sc_BIN_DIR=$__sc_BASEDIR/bin
 __sc_DATA_DIR=$__sc_BASEDIR/data
 __sc_EDITOR=${EDITOR:-vi}
 # skip anything that has a _ at the start of its filename (these are "ignored")
-__sc_MODULES=($(echo ${__sc_BASEDIR}/modules/* | xargs -n1 basename | grep -v '^_'))
+__sc_MODULES=($(ls -1 ${__sc_BASEDIR}/modules | grep -v '^_'))
 
 # return the length of the longest arg
 __sc_max_length() {

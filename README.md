@@ -53,5 +53,20 @@ search                    (search for a command by keyword)
 
 `fish` completions need to be regenerated whenever you add/edit modules.
 
-## todo
-`zsh` completions are planned
+`zsh` completions are provided in `completion.zsh`. Put it (or link it)
+wherever you normally put completion functions. For example,
+```
+% ln -sf ~/src/shortcuts/completion.zsh ~/.zsh/completion/_sc
+# reload the shell
+% sc[TAB]
+meta     -- setup, search, edit, etc
+% sc meta[TAB]
+create-command             -- create a new command
+edit                       -- edit source for a command
+generate-fish-completions  -- generate fish completions file
+search                     -- search for a command by keyword (buggy, todo)
+show                       -- show source for a command
+test-loggers               -- test logging functions
+update-fish-completions    -- update fish completions file
+zsh-completions            -- hack to generate zsh completion strings
+```

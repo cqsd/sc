@@ -1,0 +1,14 @@
+#!/bin/bash
+### hack to generate zsh completion strings
+module=$1
+if [ -z "$module" ]; then
+    for module in ${__sc_MODULES[@]}; do
+        docstring=$(__sc_module_docstring $module)
+        echo $module:$(__sc_quote_string "$docstring")
+    done
+else
+    for command in $(__sc_command_names $module); do
+        docstring=$(__sc_command_docstring $module $command)
+        echo $command:$(__sc_quote_string "$docstring")
+    done
+fi

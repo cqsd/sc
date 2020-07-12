@@ -1,20 +1,5 @@
 #!/bin/bash
-__sc_to_module_fish_completion() {
-    module=$1
-    description=$2
-    echo "complete -f -c sc -n '__fish_sc_needs_command' -a $module -d $description"
-}
-
-__sc_to_module_commands_fish_completion() {
-    module=$1
-    IFS=$'\n'
-    for command_name in $(__sc_command_names $module); do
-        docstring="$(__sc_command_docstring $module $command_name)"
-        docstring_quoted=$(printf "%q\n" "$docstring")
-        echo "complete -f -c sc -n '__fish_sc_using_command $module' -a $command_name -d $docstring_quoted"
-    done
-    unset IFS
-}
+source "$__sc_MODULES_DIR/meta/_common"
 
 ### generate fish completions file
 # get all function names and docstrings

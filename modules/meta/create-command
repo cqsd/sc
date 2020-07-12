@@ -22,4 +22,4 @@ else
     echo '#!/bin/bash' >> "$module_path/$command_name"
 fi
 
-_meta_edit  "$module_path/$command_name"
+__sc_handle_cmd meta edit  "$module_path/$command_name"
