@@ -134,6 +134,9 @@ __sc_handle_cmd() {
                 cmd=$1; shift
                 script="$module_path/$cmd"
                 if [ -f "$script" ]; then
+                    if [ -f "$module_path/_common" ]; then
+                        source "$module_path/_common"
+                    fi
                     source "$script" "$@"
                 else
                     __sc_error $module $cmd not found
