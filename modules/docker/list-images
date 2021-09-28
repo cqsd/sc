@@ -1,0 +1,10 @@
+#!/bin/bash
+### list images in a registry using the /v2/_catalog api. does not support authn
+if [ $# -ne 1 ]; then
+    echo usage: list-images BASE_URL
+    echo
+    echo example: list-images localhost:5000
+    exit 2
+fi
+
+curl -i "$1/v2/_catalog"

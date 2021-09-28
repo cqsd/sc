@@ -1,0 +1,16 @@
+#!/bin/bash
+### start a shell (bash) on the docker host (probably useful on macos and windoze)
+# (in kubernetes, you'd use AllowPrivilegeEscalation probably, todo)
+
+docker run -it \
+    --privileged \
+    --pid=host \
+    alpine \
+    nsenter -t 1 -m -u -n -i bash
+
+# nsenter  # exec something in a namespace (analogous to su -c)
+# -t 1  # take contexts from pid 1 (ie when we enter namespaces later, we are using the ones seen by pid 1)
+# -m    # enter the pid 1 mount ns
+# -u    # enter the pid 1 uts ns
+# -n    # enter the pid 1 net ns
+# -i    # enter the pid 1 ipc ns
