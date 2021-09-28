@@ -1,0 +1,17 @@
+#!/bin/bash
+
+### like printf with awk print
+
+usage() {
+    echo usage: format FSTRING
+    echo
+    echo "example: echo -e "0.0.0.0 443" | sc awk format "\''"https://"$1":"$2"/api/v1/pods"'\'
+    echo '>>> https://0.0.0.0:443/api/v1/pods'
+}
+
+if [ $# -ne 1 ]; then
+    usage
+    exit 1
+fi
+
+awk '{ print '$1' }'
