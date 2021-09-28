@@ -1,0 +1,17 @@
+#!/bin/bash
+
+### Get ip and port of censys search results by service name
+
+usage() {
+    echo usage: filter-hosts-by-service FILE SERVICE_NAME
+    echo
+    echo example: filter-hosts-by-service search-results.json KUBERNETES
+}
+
+if [ $# -ne 2 ]; then
+    usage
+    exit 2
+fi
+
+cat $1 \
+    | jq -r '.[] | ({ ip: .ip } + ({ port: .services[] | select(.service_name == "'$2'") | .port })) | [ .ip, .port ] | @tsv'
