@@ -1,0 +1,14 @@
+#!/bin/bash
+
+### <description here. keep it short>
+
+usage() {
+    echo usage: {{command}} ARG
+}
+
+if [ $# -ne 1 ]; then
+    usage
+    exit 1
+fi
+
+echo hello from {{module}} {{command}} $1

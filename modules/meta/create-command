@@ -1,5 +1,7 @@
 #!/bin/bash
+
 ### create a new command
+
 if [ $# -ne 2 ]; then
     echo usage: $(basename $0) MODULE_NAME COMMAND_NAME
     exit 1
@@ -19,7 +21,11 @@ fi
 if [ -f "$module_path/$command_name" ]; then
     __sc_error $module $command_name already exists
 else
-    echo '#!/bin/bash' >> "$module_path/$command_name"
+    # use template to set up command boilerplate
+    sed -e "s/{{module}}/$module/g" \
+        -e "s/{{command}}/$command_name/g" \
+        < "$__sc_BASEDIR/data/meta/command-template" \
+        >> "$module_path/$command_name"
 fi
 
-__sc_handle_cmd meta edit  "$module_path/$command_name"
+__sc_handle_cmd meta edit "$module" "$command_name"
