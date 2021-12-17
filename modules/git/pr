@@ -1,0 +1,28 @@
+#!/bin/bash
+
+### push a branch for the first time and open a pr
+
+usage() {
+    echo usage: pr [remote]
+}
+
+if [ "$1" = -h ]; then
+    usage
+    exit 2
+fi
+
+push=
+if [ "$1" = -p ]; then
+    push=1
+    shift
+fi
+
+remote=${1:-origin}
+branch=$(git symbolic-ref --short head)
+
+test -z "$push" || git push $remote $branch
+
+url=$(git config --get remote.${remote}.url)
+http_url=$(echo $url | sed -e 's|:|/|g' -e 's|^git@|http://|g' -e 's/.git$//g')
+
+open "$http_url/compare/$branch"
