@@ -1,0 +1,27 @@
+#!/bin/bash
+
+### anonymize new commits to a repo
+
+usage() {
+    echo 'usage: anonymize <username> [email]'
+    echo
+    echo omitting email will set an empty email, which breaks contribution graphs
+}
+
+if [ $# -ne 1 ]; then
+    usage
+    exit 1
+fi
+
+echo 'Current user name/email config (effective)'
+echo "name:  $(git config --get user.name)"
+echo "email: $(git config --get user.email)"
+echo
+
+echo 'Replacing with'
+echo "name:  $1"
+echo "email: $2"
+read -p "Press [ENTER] to continue..."
+
+git config --local user.name "$1"
+git config --local user.email "$2"
